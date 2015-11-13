@@ -114,6 +114,12 @@ def checkDataSrc():
 
 	# plot using pandas and seaborn
 	g = sns.distplot(feature1);
+	plt.subplots_adjust(top=0.9)
+	plt.xticks(range(-4,5), ['', 'Uncached', '', '', '', 'L1', 'L2', 'L3'], rotation=30)
+	plt.yticks(range(0,6), ['', '', '', '', '', ''])
+	sns.plt.title('Cache Frequencies')
+	g.set_xlabel('cache catagories')
+	g.set_ylabel('frequencies')
 
 	sns.plt.show();
 	print "checkDataSrc passed..." + '\n'
@@ -237,6 +243,10 @@ def checkDataSrc_Latency():
 	plt.legend()
 	axes = plt.gca()
 	axes.set_xlim([-1,501])
+
+	plt.title('Cache Catagories & Latencies')
+	plt.xlabel('latencies')
+	plt.ylabel('frequencies')
 	plt.show()
 
 	# plot in seaborn
@@ -244,6 +254,9 @@ def checkDataSrc_Latency():
 	b = sns.distplot(L_2)
 	c = sns.distplot(L_3)
 	d = sns.distplot(UNC)
+	sns.plt.title('Cache Catagories & Latencies')
+	a.set_xlabel('latencies')
+	a.set_ylabel('frequencies')
 	sns.plt.show()
 
 	print "checkLatency passed..." + '\n'
