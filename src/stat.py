@@ -230,11 +230,13 @@ def checkDataSrc_Latency():
 		else:
 			UNC.append(float(latency[x]))
 
-	plt.hist(L_1, color='b', label='L_1 Cache', alpha=0.99)
-	plt.hist(L_2, color='g', label='L_2 Cache', alpha=0.90)
-	plt.hist(L_3, color='r', label='L_3 Cache', alpha=0.81)
-	plt.hist(UNC, color='y', label='Uncached', alpha=0.72)
+	plt.hist(L_1, color='b', label='L_1 Cache', alpha=0.99, bins=range(0,400,1))
+	plt.hist(L_2, color='g', label='L_2 Cache', alpha=0.90, bins=range(0,400,1))
+	plt.hist(L_3, color='r', label='L_3 Cache', alpha=0.81, bins=range(0,400,1))
+	plt.hist(UNC, color='y', label='Uncached', alpha=0.72, bins=range(0,400,1))
 	plt.legend()
+	axes = plt.gca()
+	axes.set_xlim([-1,401])
 	plt.show()
 
 	# plot in seaborn
