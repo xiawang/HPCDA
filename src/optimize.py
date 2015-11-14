@@ -151,6 +151,16 @@ def map_data_src_f(src):
 		return 4
 	return 5
 
+
+def twin_proc(cpu):
+	"""
+	Specially designed for calculating the cpu sharing
+	same L1 and L2 cache.
+	"""
+	if cpu < 16:
+		return cpu+16
+	else:
+		return cpu-16
 # print extract_map('test_extract.csv', False)
 # k = map_data_src(1343226178)
 # print k

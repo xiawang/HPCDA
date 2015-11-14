@@ -261,9 +261,69 @@ def checkDataSrc_Latency():
 
 	print "checkLatency passed..." + '\n'
 
+def checkSharMetric():
+	"""
+	Customized function for checking the sharing metric.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 15, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toInteger(ft1) # CPU
+	ft2 = toInteger(ft2) # Cache
+	ft2 = map(lambda x: map_data_src(x), ft2)
+	print "Data optimized..."
+
+	# build dictionary for the metric
+	myDict = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,\
+	          16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0}
+	for i in xrange(235446):
+		if ft2[i] == 1:  # if using L1 cache
+			value = myDict[ft1[i]]
+			myDict[ft1[i]] = value+1
+
+	for i in xrange(16):
+		if myDict[ft1[i]] >= myDict[ft1[twin_proc(i)]]:
+			myDict[ft1[i]] = myDict[ft1[twin_proc(i)]]
+		else:
+			myDict[ft1[twin_proc(i)]] = myDict[ft1[i]]
+
+	sharmetric = []
+	for i in xrange(235446):
+		if ft2[i] == 1:
+			sharmetric.append(myDict[ft1[i]])
+		else:
+			sharmetric.append(0)
+
+	# then write out tesing csv
+	my_list = zip(sharmetric)
+	writeCSV('test_sharmetric.csv', my_list)
+	print "Data written..."
+
+	# load testing csv and plot
+	data.load('test_sharmetric.csv',ify=False)
+	X,y = data.getXy()
+	feature1 = []
+	print "sharing metric data loaded..."
+
+	for i in range(235446):
+	    feature1.append(float(X[i][0]))
+	print "CPU data converted to numpy array..."
+
+	# plot using pandas and seaborn
+	g = sns.distplot(feature1);
+
+	sns.plt.show();
+	print "checkAddr passed..." + '\n'
+
+
 # checkTime()
 # checkLatency()
 # checkDataSrc()
 # checkAddr()
 # checkCPU()
 checkDataSrc_Latency()
+# checkSharMetric()

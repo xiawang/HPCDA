@@ -10,7 +10,7 @@ Class for training and predicting data with
 kmeans algorithm.
 """
 
-def useKMeans(X, y, init='k-means++', n_clusters=4, n_init=10):
+def useKMeans(X, y, init='k-means++', n_clusters=3, n_init=10):
 	"""
     Clustering data with k-menas algorithm and proper parameters.
     
@@ -64,3 +64,33 @@ def plotKMeans(X, y, centers, n_clusters, x_l, x_h, y_l, y_h):
     axes.set_ylim([y_l,y_h])
     plt.show()
 
+data_lat = Data()
+data_src = Data()
+data_shar = Data()
+cpu = Data()
+
+data_lat.load('test_latency.csv',ify=False)
+data_src.load('test_data_src.csv',ify=False)
+data_shar.load('test_sharmetric.csv',ify=False)
+cpu.load('test_cpu.csv',ify=False)
+X_1,y_1 = data_lat.getXy()
+X_2,y_2 = data_src.getXy()
+X_3,y_3 = cpu.getXy()
+X_4,y_4 = data_shar.getXy()
+latency = []
+data_src = []
+CPU = []
+shar = []
+
+for i in xrange(235446):
+    if float(X_1[i][0]) < 120:
+        latency.append(float(X_1[i][0]))
+        data_src.append(float(X_2[i][0]))
+        CPU.append(float(X_3[i][0]))
+        shar.append(float(X_4[i][0]))
+
+my_list = zip(data_src,CPU,shar,latency)
+
+y = []
+y, centers, labels_unique = useKMeans(my_list, y, n_clusters=4)
+plotKMeans(my_list,y,centers,4,0,6,-5,40)
