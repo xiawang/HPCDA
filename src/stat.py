@@ -245,8 +245,8 @@ def checkDataSrc_Latency():
 	axes.set_xlim([-1,501])
 
 	plt.title('Cache Catagories & Latencies')
-	plt.xlabel('latencies')
-	plt.ylabel('frequencies')
+	plt.xlabel('latencies (in cycles)')
+	plt.ylabel('number of cache hits (misses)')
 	plt.show()
 
 	# plot in seaborn
@@ -255,8 +255,8 @@ def checkDataSrc_Latency():
 	c = sns.distplot(L_3)
 	d = sns.distplot(UNC)
 	sns.plt.title('Cache Catagories & Latencies')
-	a.set_xlabel('latencies')
-	a.set_ylabel('frequencies')
+	a.set_xlabel('latencies (in cycles)')
+	a.set_ylabel('number of cache hits (misses)')
 	sns.plt.show()
 
 	print "checkLatency passed..." + '\n'
