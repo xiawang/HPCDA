@@ -320,10 +320,64 @@ def checkSharMetric():
 	print "checkAddr passed..." + '\n'
 
 
+def checkThreadMetric():
+	"""
+	Customized function for checking the thread variation 
+	metric.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 15, start=1)
+	ft2 = extract('samples.csv', 12, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toInteger(ft1) # CPU
+	ft2 = toInteger(ft2) # Thread ID
+	print "Data optimized..."
+
+	# build dictionary for the metric
+	myDict = {}
+	tidcpumetric = []
+	for i in xrange(235446):
+		if ft2[i] not in myDict:
+			myDict[ft2[i]] = ft1[i]
+			tidcpumetric.append(0)
+		else:
+			if ft1[i] == myDict[ft2[i]]:
+				tidcpumetric.append(0)
+			else:
+				# if for the same thread cpu changes
+				myDict[ft2[i]] = ft1[i]
+				tidcpumetric.append(1)
+
+	# then write out tesing csv
+	my_list = zip(tidcpumetric)
+	writeCSV('test_tidupumetric.csv', my_list)
+	print "Data written..."
+
+	# load testing csv and plot
+	data.load('test_tidupumetric.csv',ify=False)
+	X,y = data.getXy()
+	feature1 = []
+	print "sharing metric data loaded..."
+
+	for i in range(235446):
+	    feature1.append(float(X[i][0]))
+	print "CPU data converted to numpy array..."
+
+	# plot using pandas and seaborn
+	g = sns.distplot(feature1);
+
+	sns.plt.show();
+	print "checkAddr passed..." + '\n'
+
+
 # checkTime()
 # checkLatency()
 # checkDataSrc()
 # checkAddr()
 # checkCPU()
-checkDataSrc_Latency()
+# checkDataSrc_Latency()
 # checkSharMetric()
+checkThreadMetric()
