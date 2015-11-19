@@ -33,23 +33,34 @@ def useRidgeRegression(X, y, alpha=1.0, max_iter=None):
 	# print "accuracy: ", accuracy
 	print "ridge decision function: ", riregr.coef_, " X + ", riregr.intercept_
 
+
+################################################################################
+# training
+################################################################################
+
 data_lat = Data()
 data_src = Data()
 data_shar = Data()
+data_cputid = Data()
 cpu = Data()
 
 data_lat.load('test_latency.csv',ify=False)
 data_src.load('test_data_src.csv',ify=False)
 data_shar.load('test_sharmetric.csv',ify=False)
+data_cputid.load('test_tidupumetric.csv',ify=False)
 cpu.load('test_cpu.csv',ify=False)
+
 X_1,y_1 = data_lat.getXy()
 X_2,y_2 = data_src.getXy()
 X_3,y_3 = cpu.getXy()
 X_4,y_4 = data_shar.getXy()
+X_5,y_5 = data_cputid.getXy()
+
 latency = []
 data_src = []
 CPU = []
 shar = []
+cputid = []
 
 for i in xrange(235446):
 	if float(X_1[i][0]) < 120:
@@ -57,8 +68,9 @@ for i in xrange(235446):
 		data_src.append(float(X_2[i][0]))
 		CPU.append(float(X_3[i][0]))
 		shar.append(float(X_4[i][0]))
+		cputid.append(float(X_5[i][0]))
 
-my_list = zip(data_src,CPU,shar)
+my_list = zip(data_src,CPU,shar,cputid)
 
 useLinearRegression(my_list, latency)
 useRidgeRegression(my_list, latency)
@@ -68,6 +80,7 @@ latency_s = []
 data_src_s = []
 CPU_s = []
 shar_s = []
+cputid_s = []
 
 for i in xrange(235446):
 	if float(X_1[i][0]) > 170 and float(X_1[i][0]) < 400: # only consider if latency is small
@@ -75,8 +88,9 @@ for i in xrange(235446):
 		data_src_s.append(float(X_2[i][0]))
 		CPU_s.append(float(X_3[i][0]))
 		shar_s.append(float(X_4[i][0]))
+		cputid_s.append(float(X_5[i][0]))
 
-my_list_s = zip(data_src_s,CPU_s,shar_s)
+my_list_s = zip(data_src_s,CPU_s,shar_s,cputid_s)
 
 useLinearRegression(my_list_s, latency_s)
 useRidgeRegression(my_list_s, latency_s)
