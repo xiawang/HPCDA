@@ -368,6 +368,11 @@ def checkThreadMetric():
 
 	# plot using pandas and seaborn
 	g = sns.distplot(feature1);
+	sns.plt.title('Threads jump cross CPUs')
+	g.set_xlabel('Threads Changes Metric (if change)')
+	g.set_ylabel('number of data access')
+	plt.subplots_adjust(top=0.9)
+	plt.xticks(range(0,2), ['Not Change', 'Change', ''])
 
 	sns.plt.show();
 	print "checkAddr passed..." + '\n'
