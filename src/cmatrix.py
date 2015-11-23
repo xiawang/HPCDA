@@ -22,12 +22,15 @@ def setLabels(k, latency):
         labels             -- list of integers, list of labels
     """
 	labels = []
-	latency_range = max(latency) - min(latency)
-	latency_range_k = latency_range//k
+	latency_range = int(max(latency) - min(latency))
+	latency_range_k = int(latency_range*1.0/k)+1
 	latency_base = min(latency)
 	length = len(latency)
 	for i in xrange(length):
-		label = (latency[i] - latency_base)//k
+		label = (latency[i] - latency_base)//latency_range_k
+		if label == 4.0:
+			print "dif: ",latency[i] - latency_base, " range: ",latency_range_k
+			print " Q: ", label
 		labels.append(label)
 
 	return labels
@@ -49,7 +52,7 @@ def cmatricstats(y_true, y_pred):
         precision       -- list of floatting number, confusion matrix precision
     """
 	# generating confusion matrix
-	cmatrix = metrics.confusion_matrix(y_true, y_pred)
+	cmatrix = confusion_matrix(y_true, y_pred)
 	n,d = cmatrix.shape
 	print n, " - ", d
 

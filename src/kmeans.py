@@ -1,16 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import MiniBatchKMeans, KMeans
+from sklearn.metrics import *
 import seaborn as sns; sns.set(color_codes=True)
 import pandas as pd
 from processdata import *
+from cmatrix import *
 
 """
 Class for training and predicting data with 
 kmeans algorithm.
 """
 
-def useKMeans(X, y, init='k-means++', n_clusters=3, n_init=10):
+def useKMeans(X, y, init='k-means++', n_clusters=4, n_init=10):
 	"""
     Clustering data with k-menas algorithm and proper parameters.
     
@@ -104,5 +106,23 @@ for i in xrange(235446):
 my_list = zip(data_src,CPU,shar,cputid)
 
 y = []
-y, centers, labels_unique = useKMeans(my_list, y, n_clusters=4)
+y, centers, labels_unique = useKMeans(my_list, y, n_clusters=2)
 # plotKMeans(my_list,y,centers,4,0,6,-5,40)
+
+labels = setLabels(2, latency)
+sensitivity, specificity, precision = cmatricstats(labels, y)
+
+# print "labels: ", labels
+label_set = set(labels)
+print "label_set: ", label_set
+print "unique length: ", len(labels_unique)
+# print "y: ", y
+
+f1 = f1_score(labels, y)
+accuracy = accuracy_score(labels, y)
+
+print "sensitivity: ", sensitivity
+print "specificity: ", specificity
+print "precision: ", precision
+print "f1 score: ", f1
+print "accuracy: ", accuracy
