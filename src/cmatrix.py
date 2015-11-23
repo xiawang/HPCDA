@@ -44,18 +44,37 @@ def cmatricstats(y_true, y_pred):
 
     Returns
     --------------------
-        sensitivity     -- floatting number, confusion matrix sensitivity
-        specificity     -- floatting number, confusion matrix specificity
+        sensitivity     -- list of floatting number, confusion matrix sensitivity
+        specificity     -- list of floatting number, confusion matrix specificity
     """
 	# generating confusion matrix
 	cmatrix = metrics.confusion_matrix(y_true, y_pred)
+	n,d = cmatrix.shape
+	print n, " - ", d
+
 	# getting TP, TN, FP, FN
-	tp = cmatrix[1][1]
-	tn = cmatrix[0][0]
-	fp = cmatrix[0][1]
-	fn = cmatrix[1][0]
+	tp = [0.0] * n
+	tn = [0.0] * n
+	fp = [0.0] * n
+	fn = [0.0] * n
+	for i in xrange(n):
+		for j in xrange(d):
+			if i == j:
+				tp[i] = cmatrix[i][j]
+			if i != j:
+				fn[i] += cmatrix[i][j]
+				fp[j] += cmatrix[i][j]
+
+	for i in xrange(n):
+		for j in xrange(d):
+			for k in xrange(n):
+				if k != i and k != j:
+					tn[k] += cmatrix[i][j]
+				
 	# specificity and sensitivity
-	sensitivity = tp/(tp+fn)
-	specificity = tn/(tn+fp)
+	tpfn = [x + y for x, y in zip(tp, fn)]
+	sensitivity = [x / y for x, y in zip(tp, tpfn)]
+	tnfp = [x + y for x, y in zip(tn, fp)]
+	specificity = [x / y for x, y in zip(tn, tnfp)]
 
 	return sensitivity, specificity
