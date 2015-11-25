@@ -41,6 +41,13 @@ def toStr(arr):
 	strarr = map(lambda x: str(x), arr)
 	return strarr
 
+def toLong(arr):
+	"""
+	Converting elements in an array to longs.
+	"""
+	longarr = map(lambda x: long(x), arr)
+	return longarr
+
 def bsc_min_standardization(arr):
 	"""
 	Preprocess the data by taking min and change 

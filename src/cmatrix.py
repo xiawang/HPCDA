@@ -28,9 +28,6 @@ def setLabels(k, latency):
 	length = len(latency)
 	for i in xrange(length):
 		label = (latency[i] - latency_base)//latency_range_k
-		if label == 4.0:
-			print "dif: ",latency[i] - latency_base, " range: ",latency_range_k
-			print " Q: ", label
 		labels.append(label)
 
 	return labels
@@ -54,7 +51,6 @@ def cmatricstats(y_true, y_pred):
 	# generating confusion matrix
 	cmatrix = confusion_matrix(y_true, y_pred)
 	n,d = cmatrix.shape
-	print n, " - ", d
 
 	# getting TP, TN, FP, FN
 	tp = [0.0] * n

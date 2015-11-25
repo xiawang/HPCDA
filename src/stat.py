@@ -378,6 +378,92 @@ def checkThreadMetric():
 	print "checkAddr passed..." + '\n'
 
 
+def checkFSharMetric():
+	"""
+	Customized function for checking the false sharing metric.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 14, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	ft3 = extract('samples.csv', 13, start=1)
+	ft4 = extract('samples.csv', 15, start=1)
+	print "type ft1: ", type(ft1[1])
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toLong(toFloat(ft1)) # data address
+	ft2 = toInteger(ft2) # Cache
+	ft3 = toInteger(ft3) # timestamp
+	ft4 = toInteger(ft4) # CPU
+	ft2 = map(lambda x: map_data_src(x), ft2)
+	print "Data optimized..."
+
+	# build dictionary for the metric
+	myDict = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], \
+	          8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [],\
+	          16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], \
+	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
+
+	# gather smallest vlaue for addr of each CPU ID
+	for i in xrange(235446):
+		myDict[ft4[i]].append(ft1[i])
+
+	means = [0.0]*32
+	for i in xrange(32):
+		addrs = myDict[i]
+		means[i] = sum(addrs) / float(len(addrs))
+
+	for i in xrange(32):
+		for j in xrange(50):
+			print "cpu: ", i, " addr: ", myDict[i][j]
+			
+		
+		
+
+	# for i in xrange(235446):
+	# 	if ft1[i]<100:
+	# 		print ft1[i]
+
+	# for i in xrange(235446):
+	# 	if ft2[i] == 1:  # if using L1 cache
+	# 		value = myDict[ft1[i]]
+	# 		myDict[ft1[i]] = value+1
+
+	# for i in xrange(16):
+	# 	if myDict[ft1[i]] >= myDict[ft1[twin_proc(i)]]:
+	# 		myDict[ft1[i]] = myDict[ft1[twin_proc(i)]]
+	# 	else:
+	# 		myDict[ft1[twin_proc(i)]] = myDict[ft1[i]]
+
+	# sharmetric = []
+	# for i in xrange(235446):
+	# 	if ft2[i] == 1:
+	# 		sharmetric.append(myDict[ft1[i]])
+	# 	else:
+	# 		sharmetric.append(0)
+
+	# # then write out tesing csv
+	# my_list = zip(sharmetric)
+	# writeCSV('test_sharmetric.csv', my_list)
+	# print "Data written..."
+
+	# # load testing csv and plot
+	# data.load('test_sharmetric.csv',ify=False)
+	# X,y = data.getXy()
+	# feature1 = []
+	# print "sharing metric data loaded..."
+
+	# for i in range(235446):
+	#     feature1.append(float(X[i][0]))
+	# print "CPU data converted to numpy array..."
+
+	# # plot using pandas and seaborn
+	# g = sns.distplot(feature1);
+
+	# sns.plt.show();
+	print "checkFSharMetric passed..." + '\n'
+
 # checkTime()
 # checkLatency()
 # checkDataSrc()
@@ -385,4 +471,5 @@ def checkThreadMetric():
 # checkCPU()
 # checkDataSrc_Latency()
 # checkSharMetric()
-checkThreadMetric()
+# checkThreadMetric()
+checkFSharMetric()
