@@ -4,6 +4,7 @@ import numpy as np
 from sklearn import linear_model
 from sklearn.metrics import *
 from sklearn.cross_validation import *
+from sklearn.decomposition import PCA
 
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set(color_codes=True)
@@ -25,13 +26,27 @@ def useLinearRegression(X, y, fit_intercept=True, normalize=False):
 	# print "accuracy: ", accuracy
 	print "linear decision function: ", lnregr.coef_, " X + ", lnregr.intercept_
 	y_pred = lnregr.predict(X)
+
+	# plotting data
+	# fig = plt.figure()
+	# ax = fig.add_subplot(111)
+	# fig.suptitle('linear regression', fontsize=12, fontweight='bold')
+	# length = len(y_pred)
+	# xa = list(range(length))
+	# for i in xrange(length):
+	# 	ax.plot(y[i], xa[i], 'bo')
+	# 	ax.plot(y_pred[i], xa[i], 'ro')
+
+	# plt.show();
+
+
 	mse = mean_squared_error(y, y_pred)
 	print "Mean squared error regression loss: ", mse
 	mae = mean_absolute_error(y, y_pred)
 	print "Mean absolute error regression loss: ", mae
 
 
-def useRidgeRegression(X, y, alpha=1.0, max_iter=None):
+def useRidgeRegression(X, y, alpha=0.1, max_iter=None):
 	riregr = linear_model.Ridge(alpha=alpha, max_iter=max_iter)
 	riregr.fit(X, y)
 	# y_pred = riregr.predict(X)
@@ -39,6 +54,20 @@ def useRidgeRegression(X, y, alpha=1.0, max_iter=None):
 	# print "accuracy: ", accuracy
 	print "ridge decision function: ", riregr.coef_, " X + ", riregr.intercept_
 	y_pred = riregr.predict(X)
+	mse = mean_squared_error(y, y_pred)
+	print "Mean squared error regression loss: ", mse
+	mae = mean_absolute_error(y, y_pred)
+	print "Mean absolute error regression loss: ", mae
+
+
+def useLasso(X, y, alpha=0.1):
+	lsregr = linear_model.Lasso(alpha=alpha)
+	lsregr.fit(X, y)
+	# y_pred = riregr.predict(X)
+	# accuracy = accuracy_score(y, y_pred)
+	# print "accuracy: ", accuracy
+	print "ridge decision function: ", lsregr.coef_, " X + ", lsregr.intercept_
+	y_pred = lsregr.predict(X)
 	mse = mean_squared_error(y, y_pred)
 	print "Mean squared error regression loss: ", mse
 	mae = mean_absolute_error(y, y_pred)
@@ -119,4 +148,6 @@ for i in xrange(235446):
 my_list_s = zip(data_src_s,CPU_s,shar_s,cputid_s,ds_x,ds_y,ds_z)
 
 useLinearRegression(my_list_s, latency_s)
-useRidgeRegression(my_list_s, latency_s)
+useLinearRegression(my_list_s, latency_s, fit_intercept=True, normalize=True)
+useRidgeRegression(my_list_s, latency_s, alpha=0.1)
+useLasso(my_list_s, latency_s, alpha=0.1)
