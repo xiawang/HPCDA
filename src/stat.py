@@ -264,6 +264,8 @@ def checkDataSrc_Latency():
 def checkSharMetric():
 	"""
 	Customized function for checking the sharing metric.
+	The sharing metric is calculated by weighted average of L1
+	cache access.
 	"""
 	# first read in some features from sample
 	data = Data()
@@ -278,25 +280,42 @@ def checkSharMetric():
 	print "Data optimized..."
 
 	# build dictionary for the metric
-	myDict = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,\
-	          16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0}
+	myDict = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, \
+	          8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,\
+	          16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 21: 0, 22: 0, 23: 0, \
+	          24: 0, 25: 0, 26: 0, 27: 0, 28: 0, 29: 0, 30: 0, 31: 0}
+
+	sharmetric = [0.0]*235446
 	for i in xrange(235446):
 		if ft2[i] == 1:  # if using L1 cache
 			value = myDict[ft1[i]]
+			sharmetric[i] = value
 			myDict[ft1[i]] = value+1
 
+	L1Access = 0.0
+	for i in xrange(32):
+		L1Access += myDict[i]
+	portAccess = [0.0]*32
 	for i in xrange(16):
-		if myDict[ft1[i]] >= myDict[ft1[twin_proc(i)]]:
-			myDict[ft1[i]] = myDict[ft1[twin_proc(i)]]
-		else:
-			myDict[ft1[twin_proc(i)]] = myDict[ft1[i]]
+		portAccess[i] = (myDict[i]+myDict[twin_proc(i)]) / L1Access
+		portAccess[twin_proc(i)] = portAccess[i]
 
-	sharmetric = []
 	for i in xrange(235446):
-		if ft2[i] == 1:
-			sharmetric.append(myDict[ft1[i]])
-		else:
-			sharmetric.append(0)
+		if ft2[i] == 1:  # if using L1 cache
+			sharmetric[i] = sharmetric[i] * portAccess[ft1[i]]
+
+	# for i in xrange(16):
+	# 	if myDict[ft1[i]] >= myDict[ft1[twin_proc(i)]]:
+	# 		myDict[ft1[i]] = myDict[ft1[twin_proc(i)]]
+	# 	else:
+	# 		myDict[ft1[twin_proc(i)]] = myDict[ft1[i]]
+
+	# sharmetric = [0.0]*235446
+	# for i in xrange(235446):
+	# 	if ft2[i] == 1:
+	# 		sharmetric.append(myDict[ft1[i]])
+	# 	else:
+	# 		sharmetric.append(0)
 
 	# then write out tesing csv
 	my_list = zip(sharmetric)
@@ -406,18 +425,47 @@ def checkFSharMetric():
 	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
 
 	# gather smallest vlaue for addr of each CPU ID
+
 	for i in xrange(235446):
-		myDict[ft4[i]].append(ft1[i])
+		if ft2[i] == 1:  # L1 cache
+			myDict[ft4[i]].append(ft1[i])
 
 	means = [0.0]*32
 	for i in xrange(32):
 		addrs = myDict[i]
 		means[i] = sum(addrs) / float(len(addrs))
+		print "mean[", i, "]: ", means[i]
 
-	for i in xrange(32):
-		for j in xrange(50):
-			print "cpu: ", i, " addr: ", myDict[i][j]
-			
+	for i in xrange(int(len(myDict[0]))):
+		if myDict[0][i] < means[0]:
+			print "round: ", i, " addr: ", myDict[0][i]
+	print max(myDict[0])
+	print min(myDict[0])
+	# for i in xrange(18):
+	# 	for j in xrange(50):
+	# 		if i == 1 or i == 17:
+	# 			print "cpu: ", i, " addr: ", myDict[i][j]
+	# mymax = max(myDict[1])
+	# mymin = mymax
+	# for i in xrange(int(len( myDict[1]))):
+	# 	if myDict[1][i] > means[1]:
+	# 		# print "round: ", 0, " addr: ", myDict[1][i]
+	# 		if myDict[1][i] <= mymin:
+	# 			mymin = myDict[1][i]
+	# print "min[0]: ", mymin
+	# 	print "cpu: ", 0, " addr: ", myDict[0][i]
+	# print "myDict[0] max: ", max(myDict[0])
+
+	
+	# sortedDR = []
+	# for i in xrange(2):
+		# print myDict[i]
+		# for j in xrange(len(stemp)):
+		# 	print "cpu: ", i, " addr: ", stemp[j]
+
+	# for i in xrange(17):
+	# 	for j in xrange(len(sortedDR[i])):
+	# 		print "cpu: ", i, " addr: ", myDict[i][j]
 		
 		
 
@@ -464,6 +512,56 @@ def checkFSharMetric():
 	# sns.plt.show();
 	print "checkFSharMetric passed..." + '\n'
 
+def checkXYZ():
+	"""
+	Customized function for checking the data structure.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 8, start=1)
+	ft2 = extract('samples.csv', 9, start=1)
+	ft3 = extract('samples.csv', 10, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toInteger(ft1)
+	ft2 = toInteger(ft2)
+	ft3 = toInteger(ft3)
+	print "Data optimized..."
+
+	# then write out tesing csv
+	my_list = zip(ft1,ft2,ft3)
+	my_list_x = zip(ft1)
+	my_list_y = zip(ft2)
+	my_list_z = zip(ft3)
+	writeCSV('test_xyz.csv', my_list)
+	writeCSV('test_x.csv', my_list_x)
+	writeCSV('test_y.csv', my_list_y)
+	writeCSV('test_z.csv', my_list_z)
+	print "Data written..."
+
+	# load testing csv and plot
+	data.load('test_xyz.csv',ify=False)
+	X,y = data.getXy()
+	feature1 = []
+	feature2 = []
+	feature3 = []
+	print "CPU data loaded..."
+
+	for i in range(235446):
+	    feature1.append(float(X[i][0]))
+	    feature2.append(float(X[i][1]))
+	    feature3.append(float(X[i][2]))
+	print "CPU data converted to numpy array..."
+
+	# plot using pandas and seaborn
+	g = sns.distplot(feature1);
+	h = sns.distplot(feature2);
+	i = sns.distplot(feature3);
+
+	sns.plt.show();
+	print "checkAddr passed..." + '\n'
+
 # checkTime()
 # checkLatency()
 # checkDataSrc()
@@ -472,4 +570,5 @@ def checkFSharMetric():
 # checkDataSrc_Latency()
 # checkSharMetric()
 # checkThreadMetric()
-checkFSharMetric()
+# checkFSharMetric()
+checkXYZ()

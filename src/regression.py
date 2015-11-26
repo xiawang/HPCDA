@@ -2,7 +2,8 @@ import os
 import csv
 import numpy as np
 from sklearn import linear_model
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import *
+from sklearn.cross_validation import *
 
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set(color_codes=True)
@@ -23,6 +24,11 @@ def useLinearRegression(X, y, fit_intercept=True, normalize=False):
 	# accuracy = accuracy_score(y, y_pred)
 	# print "accuracy: ", accuracy
 	print "linear decision function: ", lnregr.coef_, " X + ", lnregr.intercept_
+	y_pred = lnregr.predict(X)
+	mse = mean_squared_error(y, y_pred)
+	print "Mean squared error regression loss: ", mse
+	mae = mean_absolute_error(y, y_pred)
+	print "Mean absolute error regression loss: ", mae
 
 
 def useRidgeRegression(X, y, alpha=1.0, max_iter=None):
@@ -32,6 +38,11 @@ def useRidgeRegression(X, y, alpha=1.0, max_iter=None):
 	# accuracy = accuracy_score(y, y_pred)
 	# print "accuracy: ", accuracy
 	print "ridge decision function: ", riregr.coef_, " X + ", riregr.intercept_
+	y_pred = riregr.predict(X)
+	mse = mean_squared_error(y, y_pred)
+	print "Mean squared error regression loss: ", mse
+	mae = mean_absolute_error(y, y_pred)
+	print "Mean absolute error regression loss: ", mae
 
 
 ################################################################################
@@ -43,37 +54,46 @@ data_src = Data()
 data_shar = Data()
 data_cputid = Data()
 cpu = Data()
+data_x = Data()
+data_y = Data()
+data_z = Data()
 
 data_lat.load('test_latency.csv',ify=False)
 data_src.load('test_data_src.csv',ify=False)
 data_shar.load('test_sharmetric.csv',ify=False)
 data_cputid.load('test_tidupumetric.csv',ify=False)
 cpu.load('test_cpu.csv',ify=False)
+data_x.load('test_x.csv',ify=False)
+data_y.load('test_y.csv',ify=False)
+data_z.load('test_z.csv',ify=False)
 
 X_1,y_1 = data_lat.getXy()
 X_2,y_2 = data_src.getXy()
 X_3,y_3 = cpu.getXy()
 X_4,y_4 = data_shar.getXy()
 X_5,y_5 = data_cputid.getXy()
+X_6,y_6 = data_x.getXy()
+X_7,y_7 = data_y.getXy()
+X_8,y_8 = data_z.getXy()
 
-latency = []
-data_src = []
-CPU = []
-shar = []
-cputid = []
+# latency = []
+# data_src = []
+# CPU = []
+# shar = []
+# cputid = []
 
-for i in xrange(235446):
-	if float(X_1[i][0]) < 120:
-		latency.append(float(X_1[i][0]))
-		data_src.append(float(X_2[i][0]))
-		CPU.append(float(X_3[i][0]))
-		shar.append(float(X_4[i][0]))
-		cputid.append(float(X_5[i][0]))
+# for i in xrange(235446):
+# 	if float(X_1[i][0]) < 120:
+# 		latency.append(float(X_1[i][0]))
+# 		data_src.append(float(X_2[i][0]))
+# 		CPU.append(float(X_3[i][0]))
+# 		shar.append(float(X_4[i][0]))
+# 		cputid.append(float(X_5[i][0]))
 
-my_list = zip(data_src,CPU,shar,cputid)
+# my_list = zip(data_src,CPU,shar,cputid)
 
-useLinearRegression(my_list, latency)
-useRidgeRegression(my_list, latency)
+# useLinearRegression(my_list, latency)
+# useRidgeRegression(my_list, latency)
 
 # examine most useful part
 latency_s = []
@@ -81,16 +101,22 @@ data_src_s = []
 CPU_s = []
 shar_s = []
 cputid_s = []
+ds_x = []
+ds_y = []
+ds_z = []
 
 for i in xrange(235446):
-	if float(X_1[i][0]) > 170 and float(X_1[i][0]) < 400: # only consider if latency is small
+	if float(X_1[i][0]) > 0 and float(X_1[i][0]) < 500: # only consider if latency is small
 		latency_s.append(float(X_1[i][0]))
 		data_src_s.append(float(X_2[i][0]))
 		CPU_s.append(float(X_3[i][0]))
 		shar_s.append(float(X_4[i][0]))
 		cputid_s.append(float(X_5[i][0]))
+		ds_x.append(float(X_6[i][0]))
+		ds_y.append(float(X_7[i][0]))
+		ds_z.append(float(X_8[i][0]))
 
-my_list_s = zip(data_src_s,CPU_s,shar_s,cputid_s)
+my_list_s = zip(data_src_s,CPU_s,shar_s,cputid_s,ds_x,ds_y,ds_z)
 
 useLinearRegression(my_list_s, latency_s)
 useRidgeRegression(my_list_s, latency_s)
