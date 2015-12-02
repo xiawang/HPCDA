@@ -6,6 +6,7 @@ for titanic data set.
 import math
 import csv
 from titanicutil import *
+from kmeans import *
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.cross_validation import train_test_split
@@ -251,10 +252,12 @@ def main():
     
     
     # plot histograms of each feature
-    print 'Plotting...'
     #for i in xrange(d) :
         #plot_histogram(X[:,i], y, Xname=Xnames[i], yname=yname)
 
+    print " "
+    print "running decision tree algorithms..."
+    print " "
 
     # evaluate training error of Decision Tree classifier
     clf = DecisionTreeClassifier(criterion="entropy") # create MajorityVote classifier, which includes all model parameters
@@ -280,6 +283,21 @@ def main():
     clf = DecisionTreeClassifier(criterion="entropy") # create MajorityVote classifier, which includes all model parameters
     train_error, test_error = error(clf, X, y, ntrials = 100, test_size=0.2)
     print 'DecisionTree -- training error: '+str(train_error)+', test error: '+str(test_error)
+
+    print " "
+    print "running clustering algorithms..."
+    print " "
+
+    y_pred = []
+    y_pred, centers, labels_unique = useKMeans(X, y_pred, n_clusters=2)
+    sensitivity, specificity, precision = cmatricstats(y, y_pred)
+    print "sensitivity: ", sensitivity
+    print "specificity: ", specificity
+    print "precision: ", precision
+
+    print " "
+    print "running regression algorithms..."
+    print " "
  
     print 'Done'
 
