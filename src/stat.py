@@ -512,95 +512,31 @@ def checkFSharMetric():
 		if ft2[i] == 1:  # L1 cache
 			region = closest_addr_region(avrg_addr, ft1[i])
 			mregion = int(region)/k
+			start_p = 0
+			if i > 10:
+				start_p = i-10
 			if mregion != ft4[i]:
-				ffsharing[i] = 1.0
+				fs = False
+				for j in xrange(start_p,i):
+					if ft4[j] == mregion:
+						fs= True
+				if mregion == twin_proc(ft4[i]):
+					if fs == False:
+						ffsharing[i] = 1.0
+					else:
+						ffsharing[i] = 2.0
+				else:
+					if fs == False:
+						ffsharing[i] = 3.0
+					else:
+						ffsharing[i] = 4.0
 
 	sns.distplot(ffsharing)
 	sns.plt.show()
 
-	# plot out distribution of address (normal and seaborn)
-	# plt.hist(y)
-	# axes = plt.gca()
-	# axes.set_xlim([-1,8])
-	# plt.show()
-
-	# cplot = sns.distplot(y)
-	# sns.plt.show()
-
-
-	# plt.hist(CPU_0, color='b', label='address for cpu 0', alpha=0.99, bins=range(0,md_max,1))
-	# plt.legend()
-	# axes = plt.gca()
-	# axes.set_xlim([-1,md_max+1])
-	# for i in xrange(18):
-	# 	for j in xrange(50):
-	# 		if i == 1 or i == 17:
-	# 			print "cpu: ", i, " addr: ", myDict[i][j]
-	# mymax = max(myDict[1])
-	# mymin = mymax
-	# for i in xrange(int(len( myDict[1]))):
-	# 	if myDict[1][i] > means[1]:
-	# 		# print "round: ", 0, " addr: ", myDict[1][i]
-	# 		if myDict[1][i] <= mymin:
-	# 			mymin = myDict[1][i]
-	# print "min[0]: ", mymin
-	# 	print "cpu: ", 0, " addr: ", myDict[0][i]
-	# print "myDict[0] max: ", max(myDict[0])
-
-	
-	# sortedDR = []
-	# for i in xrange(2):
-		# print myDict[i]
-		# for j in xrange(len(stemp)):
-		# 	print "cpu: ", i, " addr: ", stemp[j]
-
-	# for i in xrange(17):
-	# 	for j in xrange(len(sortedDR[i])):
-	# 		print "cpu: ", i, " addr: ", myDict[i][j]
-		
-		
-
-	# for i in xrange(235446):
-	# 	if ft1[i]<100:
-	# 		print ft1[i]
-
-	# for i in xrange(235446):
-	# 	if ft2[i] == 1:  # if using L1 cache
-	# 		value = myDict[ft1[i]]
-	# 		myDict[ft1[i]] = value+1
-
-	# for i in xrange(16):
-	# 	if myDict[ft1[i]] >= myDict[ft1[twin_proc(i)]]:
-	# 		myDict[ft1[i]] = myDict[ft1[twin_proc(i)]]
-	# 	else:
-	# 		myDict[ft1[twin_proc(i)]] = myDict[ft1[i]]
-
-	# sharmetric = []
-	# for i in xrange(235446):
-	# 	if ft2[i] == 1:
-	# 		sharmetric.append(myDict[ft1[i]])
-	# 	else:
-	# 		sharmetric.append(0)
-
-	# # then write out tesing csv
-	# my_list = zip(sharmetric)
-	# writeCSV('test_sharmetric.csv', my_list)
-	# print "Data written..."
-
-	# # load testing csv and plot
-	# data.load('test_sharmetric.csv',ify=False)
-	# X,y = data.getXy()
-	# feature1 = []
-	# print "sharing metric data loaded..."
-
-	# for i in range(235446):
-	#     feature1.append(float(X[i][0]))
-	# print "CPU data converted to numpy array..."
-
-	# # plot using pandas and seaborn
-	# g = sns.distplot(feature1);
-
-	# sns.plt.show();
+	my_list = zip(ffsharing)
+	writeCSV('test_ffsharing.csv', my_list)
+	print "Data written..."
 	print "checkFSharMetric passed..." + '\n'
 
 def checkXYZ():

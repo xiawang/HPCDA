@@ -86,15 +86,17 @@ cpu = Data()
 data_x = Data()
 data_y = Data()
 data_z = Data()
+data_ffshar = Data()
 
 data_lat.load('test_latency.csv',ify=False)
 data_src.load('test_data_src.csv',ify=False)
-data_shar.load('test_sharmetric.csv',ify=False)
+data_shar.load('test_sharmetric.csv',ify=False) # pipeline
 data_cputid.load('test_tidupumetric.csv',ify=False)
 cpu.load('test_cpu.csv',ify=False)
 data_x.load('test_x.csv',ify=False)
 data_y.load('test_y.csv',ify=False)
 data_z.load('test_z.csv',ify=False)
+data_ffshar.load('test_ffsharing.csv',ify=False) # fuzzy false sharing
 
 X_1,y_1 = data_lat.getXy()
 X_2,y_2 = data_src.getXy()
@@ -104,6 +106,7 @@ X_5,y_5 = data_cputid.getXy()
 X_6,y_6 = data_x.getXy()
 X_7,y_7 = data_y.getXy()
 X_8,y_8 = data_z.getXy()
+X_9,y_9 = data_ffshar.getXy()
 
 # latency = []
 # data_src = []
@@ -133,6 +136,7 @@ cputid_s = []
 ds_x = []
 ds_y = []
 ds_z = []
+ffshar_s = []
 
 for i in xrange(235446):
 	if float(X_1[i][0]) > 0 and float(X_1[i][0]) < 500: # only consider if latency is small
@@ -144,8 +148,9 @@ for i in xrange(235446):
 		ds_x.append(float(X_6[i][0]))
 		ds_y.append(float(X_7[i][0]))
 		ds_z.append(float(X_8[i][0]))
+		ffshar_s.append(float(X_9[i][0]))
 
-my_list_s = zip(data_src_s,CPU_s,shar_s,cputid_s,ds_x,ds_y,ds_z)
+my_list_s = zip(data_src_s,CPU_s,shar_s,cputid_s,ds_x,ds_y,ds_z,ffshar_s)
 
 useLinearRegression(my_list_s, latency_s)
 useLinearRegression(my_list_s, latency_s, fit_intercept=True, normalize=True)
