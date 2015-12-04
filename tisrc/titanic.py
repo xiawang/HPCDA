@@ -10,6 +10,7 @@ from kmeans import *
 
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.cross_validation import train_test_split
+from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 
 ######################################################################
@@ -298,6 +299,20 @@ def main():
     print " "
     print "running regression algorithms..."
     print " "
+
+    logreg = LogisticRegression()
+    logreg.fit(X, y)
+
+    train_error, test_error = error(logreg, X, y, ntrials = 100, test_size=0.1)
+    print 'Logistic regression -- training error: '+str(train_error)+', test error: '+str(test_error)
+
+    # titanic_test = load_data("titanic_test.csv",header=1, predict_col=0)
+    # X_test = titanic_test.X
+    # y_test = titanic_test.y
+
+    # y_pred = logreg.predict(X_test)
+    # test_error = 1 - metrics.accuracy_score(y_test, y_pred, normalize=True)
+    # print 'training error for Logistic regression classifier: %.3f' % test_error
  
     print 'Done'
 

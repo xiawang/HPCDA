@@ -10,6 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from processdata import *
 from kmeans import *
 from optimize import *
+from kmeans import *
 
 def checkTime():
 	"""
@@ -418,6 +419,10 @@ def checkFSharMetric():
 	ft2 = map(lambda x: map_data_src(x), ft2)
 	print "Data optimized..."
 
+	my_list = zip(ft1,ft4,ft2,ft3)
+	writeCSV('test_fsharing.csv', my_list)
+	print "Data written..."
+
 	# build dictionary for the metric
 	myDict = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], \
 	          8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [],\
@@ -441,6 +446,92 @@ def checkFSharMetric():
 			print "round: ", i, " addr: ", myDict[0][i]
 	print max(myDict[0])
 	print min(myDict[0])
+
+	md_max = max(myDict[0])
+	md_min = min(myDict[0])
+
+	# fuzzy false sharing metric
+	k = 4
+	avrg_addr = [0.0]*32*k
+
+	for l in xrange(32):
+		CPU_d = []
+		for i in xrange(int(len(myDict[l]))):
+			CPU_d.append([myDict[l][i]])
+
+		# sns.distplot(CPU_d, bins=250)
+		# plt.hist(CPU_d, 20)
+
+		# kmeans clustering for address
+		y = []
+		y, centers, labels_unique = useKMeans(CPU_d, y, n_clusters=k)
+		# print labels_unique
+		# print centers
+
+		sample_d = [0.0]*k # 2
+		sig_d = [0.0]*k
+		for i in xrange(k):
+			sum_k = 0.0
+			count_k = 0
+			for j in xrange(int(len(myDict[l]))):
+				if y[j] == i:
+					sum_k += myDict[l][j]
+					count_k += 1
+			mean_k = sum_k / count_k
+			sample_d[i] = mean_k
+
+		# if sample_d[0] > sample_d[1]:
+		# 	avrg_addr[l*2] = sample_d[0]
+		# 	avrg_addr[l*2+1] = sample_d[1]
+		# else:
+		# 	avrg_addr[l*2] = sample_d[1]
+		# 	avrg_addr[l*2+1] = sample_d[0]
+
+		for i in xrange(k):
+			avrg_addr[l*k+i] = sample_d[i]
+
+		for i in xrange(k):
+			sig_d[i] = (sample_d[0]-sample_d[i]) / sample_d[i] * 100.0
+
+		print "cpu: ", l
+
+		print sample_d
+		print sig_d
+
+	print avrg_addr
+
+	# calculate # of elements stored in the dic
+	count_d = 0
+	for i in xrange(32):
+		count_d += int(len(myDict[i]))
+	print count_d
+
+	# create list for the metric
+	ffsharing = [0.0]*235446
+	for i in xrange(235446):
+		if ft2[i] == 1:  # L1 cache
+			region = closest_addr_region(avrg_addr, ft1[i])
+			mregion = int(region)/k
+			if mregion != ft4[i]:
+				ffsharing[i] = 1.0
+
+	sns.distplot(ffsharing)
+	sns.plt.show()
+
+	# plot out distribution of address (normal and seaborn)
+	# plt.hist(y)
+	# axes = plt.gca()
+	# axes.set_xlim([-1,8])
+	# plt.show()
+
+	# cplot = sns.distplot(y)
+	# sns.plt.show()
+
+
+	# plt.hist(CPU_0, color='b', label='address for cpu 0', alpha=0.99, bins=range(0,md_max,1))
+	# plt.legend()
+	# axes = plt.gca()
+	# axes.set_xlim([-1,md_max+1])
 	# for i in xrange(18):
 	# 	for j in xrange(50):
 	# 		if i == 1 or i == 17:
@@ -570,5 +661,5 @@ def checkXYZ():
 # checkDataSrc_Latency()
 # checkSharMetric()
 # checkThreadMetric()
-# checkFSharMetric()
-checkXYZ()
+checkFSharMetric()
+# checkXYZ()

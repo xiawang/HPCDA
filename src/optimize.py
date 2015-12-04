@@ -168,6 +168,13 @@ def twin_proc(cpu):
 		return cpu+16
 	else:
 		return cpu-16
-# print extract_map('test_extract.csv', False)
-# k = map_data_src(1343226178)
-# print k
+
+
+def closest_addr_region(avrg_addr, addr):
+	"""
+	Specially designed for calculating the closest
+	memory address region for each cpu.
+	"""
+	diff = map(lambda x: abs(x-addr), avrg_addr)
+	min_idx = diff.index(min(diff))
+	return min_idx
