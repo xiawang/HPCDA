@@ -522,16 +522,19 @@ def checkFSharMetric():
 						fs= True
 				if mregion == twin_proc(ft4[i]):
 					if fs == False:
-						ffsharing[i] = 1.0
+						ffsharing[i] = 1.0 # same physical core, did not visit in a short time
 					else:
-						ffsharing[i] = 2.0
+						ffsharing[i] = 3.0 # same physical core, visited in 10 rounds
 				else:
 					if fs == False:
-						ffsharing[i] = 3.0
+						ffsharing[i] = 2.0 # different physical core, did not visit in a short time
 					else:
-						ffsharing[i] = 4.0
+						ffsharing[i] = 4.0 # different physical core, visited in 10 rounds
 
-	sns.distplot(ffsharing)
+	g_1 = sns.distplot(ffsharing)
+	sns.plt.title('Fuzzy False Sharing')
+	g_1.set_xlabel('sharing catagories (refer to code)')
+	g_1.set_ylabel('frequencies')
 	sns.plt.show()
 
 	my_list = zip(ffsharing)
