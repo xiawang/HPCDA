@@ -110,3 +110,21 @@ def cmatricstats(y_true, y_pred):
     precision = [x / y for x, y in zip(tp, tpfp)]
 
     return sensitivity, specificity, precision
+
+
+def bicmatricstats(y_true, y_pred):
+    # generating confusion matrix
+    cmatrix = confusion_matrix(y_true, y_pred)
+
+    # getting TP, TN, FP, FN
+    tp = cmatrix[1][1]
+    tn = cmatrix[0][0]
+    fp = cmatrix[0][1]
+    fn = cmatrix[1][0]
+
+    # specificity and sensitivity
+    sensitivity = tp/(tp+fn)
+    specificity = tn/(tn+fp)
+    precision = tp/(tp+fp)
+
+    return sensitivity, specificity, precision

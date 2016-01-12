@@ -294,7 +294,7 @@ def main():
     sensitivity, specificity, precision = cmatricstats(y, y_pred)
     print "sensitivity: ", sensitivity
     print "specificity: ", specificity
-    print "precision: ", precision
+    # print "precision: ", precision
 
     print " "
     print "running regression algorithms..."
