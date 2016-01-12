@@ -114,15 +114,38 @@ def checkDataSrc():
 	print "Data_src converted to numpy array..."
 
 	# plot using pandas and seaborn
-	g = sns.distplot(feature1);
-	plt.subplots_adjust(top=0.9)
-	plt.xticks(range(-4,5), ['', 'Uncached', '', '', '', 'L1', 'L2', 'L3'], rotation=30)
-	plt.yticks(range(0,6), ['', '', '', '', '', ''])
-	sns.plt.title('Cache Frequencies')
-	g.set_xlabel('cache catagories')
-	g.set_ylabel('frequencies')
+	# g = sns.distplot(feature1);
+	# plt.subplots_adjust(top=0.9)
+	# plt.xticks(range(-4,5), ['', 'Uncached', '', '', '', 'L1', 'L2', 'L3'], rotation=30)
+	# plt.yticks(range(0,6), ['', '', '', '', '', ''])
+	# sns.plt.title('Cache Frequencies')
+	# g.set_xlabel('cache catagories')
+	# g.set_ylabel('frequencies')
 
-	sns.plt.show();
+	# sns.plt.show();
+	L_1 = 0
+	L_2 = 0
+	L_3 = 0
+	L_N = 0
+	for i in xrange(235446):
+		if feature1[i] == 1:
+			L_1 += 1
+		if feature1[i] == 2:
+			L_2 += 1
+		if feature1[i] == 3:
+			L_3 += 1
+		if feature1[i] == -3:
+			L_N += 1
+
+	# plot pie chart
+	labels = 'L1', 'L2', 'L3', 'Non-cached'
+	sizes = [L_1, L_2, L_3, L_N]
+	colors = ['gold', 'yellowgreen', 'lightcoral', 'lightskyblue']
+	explode = (0.08, 0.04, 0.02, 0)
+	plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', shadow=True, startangle=140)
+	plt.axis('equal')
+	plt.title('Cache Access Frequencies Comparison')
+	plt.show()
 	print "checkDataSrc passed..." + '\n'
 
 def checkAddr():
@@ -397,6 +420,9 @@ def checkThreadMetric():
 	sns.plt.show();
 	print "checkAddr passed..." + '\n'
 
+###################################################################
+#                       Fuzzy False Sharing
+###################################################################
 
 def checkFSharMetric():
 	"""
@@ -507,7 +533,7 @@ def checkFSharMetric():
 	print count_d
 
 	# create list for the metric
-	ffsharing = [0.0]*235446
+	ffsharing = [4.0]*235446
 	for i in xrange(235446):
 		if ft2[i] == 1:  # L1 cache
 			region = closest_addr_region(avrg_addr, ft1[i])
@@ -522,14 +548,14 @@ def checkFSharMetric():
 						fs= True
 				if mregion == twin_proc(ft4[i]):
 					if fs == False:
-						ffsharing[i] = 1.0 # same physical core, did not visit in a short time
+						ffsharing[i] = 3.0 # same physical core, did not visit in a short time
 					else:
-						ffsharing[i] = 3.0 # same physical core, visited in 10 rounds
+						ffsharing[i] = 1.0 # same physical core, visited in 10 rounds
 				else:
 					if fs == False:
 						ffsharing[i] = 2.0 # different physical core, did not visit in a short time
 					else:
-						ffsharing[i] = 4.0 # different physical core, visited in 10 rounds
+						ffsharing[i] = 0.0 # different physical core, visited in 10 rounds
 
 	g_1 = sns.distplot(ffsharing)
 	sns.plt.title('Fuzzy False Sharing')

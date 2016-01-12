@@ -127,3 +127,6 @@ def trainingkm():
         print "precision: ", precision
         print "f1 score: ", f1
         print "accuracy: ", accuracy
+
+
+trainingkm()

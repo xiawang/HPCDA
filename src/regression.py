@@ -44,6 +44,8 @@ def useLinearRegression(X, y, fit_intercept=True, normalize=False):
 	print "Mean squared error regression loss: ", mse
 	mae = mean_absolute_error(y, y_pred)
 	print "Mean absolute error regression loss: ", mae
+	cv_scores = cross_val_score(lnregr, X, y, cv=11, scoring=scorer)
+	print "Cross validation scores: ", cv_scores
 
 
 def useRidgeRegression(X, y, alpha=0.1, max_iter=None):
@@ -58,6 +60,8 @@ def useRidgeRegression(X, y, alpha=0.1, max_iter=None):
 	print "Mean squared error regression loss: ", mse
 	mae = mean_absolute_error(y, y_pred)
 	print "Mean absolute error regression loss: ", mae
+	cv_scores = cross_val_score(riregr, X, y, cv=11, scoring=scorer)
+	print "Cross validation scores: ", cv_scores
 
 
 def useLasso(X, y, alpha=0.1):
@@ -72,7 +76,21 @@ def useLasso(X, y, alpha=0.1):
 	print "Mean squared error regression loss: ", mse
 	mae = mean_absolute_error(y, y_pred)
 	print "Mean absolute error regression loss: ", mae
+	cv_scores = cross_val_score(lsregr, X, y, cv=11, scoring=scorer)
+	print "Cross validation scores: ", cv_scores
 
+
+def my_custom_loss_func(ground_truth, predictions):
+	"""
+	Customized scoring function for regression model.
+	"""
+	total = len(predictions)
+	diff = np.abs(ground_truth - predictions)
+	truth_list = map(lambda x: x<40, diff)
+	truth_val = sum(truth_list)
+	return truth_val*1.0/total
+
+scorer  = make_scorer(my_custom_loss_func, greater_is_better=True)
 
 ################################################################################
 # training
@@ -152,7 +170,18 @@ for i in xrange(235446):
 
 my_list_s = zip(data_src_s,CPU_s,shar_s,cputid_s,ds_x,ds_y,ds_z,ffshar_s)
 
+print "Linear: "
 useLinearRegression(my_list_s, latency_s)
-useLinearRegression(my_list_s, latency_s, fit_intercept=True, normalize=True)
-useRidgeRegression(my_list_s, latency_s, alpha=0.1)
-useLasso(my_list_s, latency_s, alpha=0.1)
+print ""
+
+# print "Linear - normalized: "
+# useLinearRegression(my_list_s, latency_s, fit_intercept=True, normalize=True)
+# print ""
+
+print "Ridge: "
+useRidgeRegression(my_list_s, latency_s, alpha=0.05)
+print ""
+
+print "Lasso: "
+useLasso(my_list_s, latency_s, alpha=0.001)
+print ""
