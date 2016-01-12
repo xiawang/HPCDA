@@ -439,10 +439,10 @@ def checkFSharMetric():
 
 	# do some optimization
 	ft1 = toLong(toFloat(ft1)) # data address
-	ft2 = toInteger(ft2) # Cache
+	ft2 = toInteger(ft2) # Cache raw
 	ft3 = toInteger(ft3) # timestamp
 	ft4 = toInteger(ft4) # CPU
-	ft2 = map(lambda x: map_data_src(x), ft2)
+	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
 	print "Data optimized..."
 
 	my_list = zip(ft1,ft4,ft2,ft3)
@@ -477,8 +477,11 @@ def checkFSharMetric():
 	md_min = min(myDict[0])
 
 	# fuzzy false sharing metric
+	# k is assigned to be 4 in this case
+	# by plotting out addresses, we could
+	# see there are roughly 4 clusters
 	k = 4
-	avrg_addr = [0.0]*32*k
+	avrg_addr = [0.0]*32*k # mean for each cluster in 32 CPUs
 
 	for l in xrange(32):
 		CPU_d = []
@@ -494,6 +497,7 @@ def checkFSharMetric():
 		# print labels_unique
 		# print centers
 
+		# calculate mean addresses for each cluster
 		sample_d = [0.0]*k # 2
 		sig_d = [0.0]*k
 		for i in xrange(k):
@@ -513,6 +517,7 @@ def checkFSharMetric():
 		# 	avrg_addr[l*2] = sample_d[1]
 		# 	avrg_addr[l*2+1] = sample_d[0]
 
+		# assign mean address to the variable
 		for i in xrange(k):
 			avrg_addr[l*k+i] = sample_d[i]
 
