@@ -484,7 +484,7 @@ def checkFSharMetric():
 	avrg_addr = [0.0]*32*k # mean for each cluster in 32 CPUs
 
 	for l in xrange(32):
-		CPU_d = []
+		CPU_d = [] # CPU data containing memory address
 		for i in xrange(int(len(myDict[l]))):
 			CPU_d.append([myDict[l][i]])
 
@@ -518,6 +518,7 @@ def checkFSharMetric():
 		# 	avrg_addr[l*2+1] = sample_d[0]
 
 		# assign mean address to the variable
+		# k consecutive same mean addresses for each CPU
 		for i in xrange(k):
 			avrg_addr[l*k+i] = sample_d[i]
 
@@ -541,7 +542,9 @@ def checkFSharMetric():
 	ffsharing = [4.0]*235446
 	for i in xrange(235446):
 		if ft2[i] == 1:  # L1 cache
+		    # calculate raw CPU index from the memory address
 			region = closest_addr_region(avrg_addr, ft1[i])
+			# convert raw CPU index to CPU index
 			mregion = int(region)/k
 			start_p = 0
 			if i > 10:
