@@ -4,6 +4,7 @@ import numpy as np; np.random.seed(0)
 import seaborn as sns; sns.set(color_codes=True)
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy.stats
 
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -482,6 +483,8 @@ def checkFSharMetric():
 	# see there are roughly 4 clusters
 	k = 4
 	avrg_addr = [0.0]*32*k # mean for each cluster in 32 CPUs
+	std_addr = [0.0]*32 # standard deviation for addresses of each CPU
+	calc_distr = [0.0]*32 # calculated normal distribution probability
 
 	for l in xrange(32):
 		CPU_d = [] # CPU data containing memory address
@@ -525,12 +528,26 @@ def checkFSharMetric():
 		for i in xrange(k):
 			sig_d[i] = (sample_d[0]-sample_d[i]) / sample_d[i] * 100.0
 
+		# calculate standard deviation
+		stddev = 0
+		for j in xrange(int(len(myDict[l]))):
+			stddev += (myDict[l][j] - sample_d[i])**2
+		stddev = stddev*1.0 / len(myDict[l])
+
+		std_addr[l] = (stddev)**0.5
+
 		print "cpu: ", l
 
 		print sample_d
 		print sig_d
 
 	print avrg_addr
+	print " "
+	print "standard deviation: "
+	print std_addr
+
+	for x in xrange(1,10):
+		pass
 
 	# calculate # of elements stored in the dic
 	count_d = 0
@@ -539,7 +556,8 @@ def checkFSharMetric():
 	print count_d
 
 	# create list for the metric
-	ffsharing = [4.0]*235446
+	ffsharing = [3.0]*235446
+	counter  = 0.0
 	for i in xrange(235446):
 		if ft2[i] == 1:  # L1 cache
 		    # calculate raw CPU index from the memory address
@@ -547,29 +565,76 @@ def checkFSharMetric():
 			# convert raw CPU index to CPU index
 			mregion = int(region)/k
 			start_p = 0
-			if i > 10:
-				start_p = i-10
-			if mregion != ft4[i]:
-				fs = False
-				for j in xrange(start_p,i):
-					if ft4[j] == mregion:
-						fs= True
-				if mregion == twin_proc(ft4[i]):
-					if fs == False:
-						ffsharing[i] = 3.0 # same physical core, did not visit in a short time
-					else:
-						ffsharing[i] = 1.0 # same physical core, visited in 10 rounds
-				else:
-					if fs == False:
-						ffsharing[i] = 2.0 # different physical core, did not visit in a short time
-					else:
-						ffsharing[i] = 0.0 # different physical core, visited in 10 rounds
+			theMean = avrg_addr[4*ft4[i]+1]
+			theSTDDEV = std_addr[ft4[i]]
+			theMean_twin = avrg_addr[4*twin_proc(ft4[i])+1]
+			theSTDDEV_twin = std_addr[twin_proc(ft4[i])]
 
-	g_1 = sns.distplot(ffsharing)
-	sns.plt.title('Fuzzy False Sharing')
-	g_1.set_xlabel('sharing catagories (refer to code)')
-	g_1.set_ylabel('frequencies')
-	sns.plt.show()
+			# calculate raw addr distribution for corresponding CPU
+			ffaddr = abs(ft1[i] - theMean)*1.0 / theSTDDEV
+			ffaddr_twin = abs(ft1[i] - theMean_twin)*1.0 / theSTDDEV_twin
+			ffsharing[i] = ffaddr+ffaddr_twin
+
+			counter = ffsharing[i] if ffsharing[i] >= counter else counter
+
+			# calculate raw time distribution
+			# two acesses are considered to be close in range of 10
+			time_count = 0
+			time_denom = 0
+			if i < 5:
+				time_denom = (i+5)*2
+				for x in xrange(i+5):
+					if ft4[i] == ft4[x]:
+						time_count += 2
+					elif ft4[i] == twin_proc(ft4[x]):
+						time_count += 1
+			elif i >= 5 and i < 235441:
+				time_denom = 20
+				for x in xrange(i-5, i+5):
+					if ft4[i] == ft4[x]:
+						time_count += 2
+					elif ft4[i] == twin_proc(ft4[x]):
+						time_count += 1
+			else:
+				time_denom = (235446-i+5)*2
+				for x in xrange(i-5, 235446):
+					if ft4[i] == ft4[x]:
+						time_count += 2
+					elif ft4[i] == twin_proc(ft4[x]):
+						time_count += 1
+
+			time_count = (time_count*3.0 / time_denom)
+
+			# ffsharing[i] += time_count
+
+			# ffsharing[i] = scipy.stats.norm(theMean, theSTDDEV).pdf(ft1[i])
+			# if i > 10:
+			# 	start_p = i-10
+			# if mregion != ft4[i]:
+			# 	fs = False
+			# 	for j in xrange(start_p,i):
+			# 		if ft4[j] == mregion:
+			# 			fs= True
+			# 	if mregion == twin_proc(ft4[i]):
+			# 		if fs == False:
+			# 			ffsharing[i] = 3.0 # same physical core, did not visit in a short time
+			# 		else:
+			# 			ffsharing[i] = 1.0 # same physical core, visited in 10 rounds
+			# 	else:
+			# 		if fs == False:
+			# 			ffsharing[i] = 2.0 # different physical core, did not visit in a short time
+			# 		else:
+			# 			ffsharing[i] = 0.0 # different physical core, visited in 10 rounds
+
+	# g_1 = sns.distplot(ffsharing)
+	# sns.plt.title('Fuzzy False Sharing')
+	# g_1.set_xlabel('sharing catagories (refer to code)')
+	# g_1.set_ylabel('frequencies')
+	# sns.plt.show()
+	print "counter: "+str(counter)
+
+	for x in xrange(1,100):
+		print ffsharing[x]
 
 	my_list = zip(ffsharing)
 	writeCSV('test_ffsharing.csv', my_list)
