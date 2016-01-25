@@ -563,31 +563,31 @@ def checkFSharMetric():
 			ffs_metric = 0.0
 
 			if i < 5:
-				for x in xrange(i+5):
+				for x in xrange(i+5): # within 10 rounds (short period of time)
 					temp_region = closest_addr_region(avrg_addr, ft1[x])
 					temp_mregion = int(temp_region)/k
 					if temp_mregion == mregion:
-						if ft4[x] != ft4[i]:
+						if ft4[x] == twin_proc(ft4[i]): # same physical core; not same CPU id
 							ffs_metric += 3
-						elif ft4[x] == twin_proc(ft4[i]):
+						elif ft4[x] != ft4[i]: # different physical core
 							ffs_metric += 1
 			elif i >= 5 and i < 235441:
 				for x in xrange(i-5, i+5):
 					temp_region = closest_addr_region(avrg_addr, ft1[x])
 					temp_mregion = int(temp_region)/k
 					if temp_mregion == mregion:
-						if ft4[x] != ft4[i]:
+						if ft4[x] == twin_proc(ft4[i]):
 							ffs_metric += 3
-						elif ft4[x] == twin_proc(ft4[i]):
+						elif ft4[x] != ft4[i]:
 							ffs_metric += 1
 			else:
 				for x in xrange(i-5, 235446):
 					temp_region = closest_addr_region(avrg_addr, ft1[x])
 					temp_mregion = int(temp_region)/k
 					if temp_mregion == mregion:
-						if ft4[x] != ft4[i]:
+						if ft4[x] == twin_proc(ft4[i]):
 							ffs_metric += 3
-						elif ft4[x] == twin_proc(ft4[i]):
+						elif ft4[x] != ft4[i]:
 							ffs_metric += 1
 
 			ffsharing[i] = ffs_metric
