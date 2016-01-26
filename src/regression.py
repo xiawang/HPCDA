@@ -25,7 +25,7 @@ def useLinearRegression(X, y, fit_intercept=True, normalize=False):
 	# accuracy = accuracy_score(y, y_pred)
 	# print "accuracy: ", accuracy
 	print "linear decision function: ", lnregr.coef_, " X + ", lnregr.intercept_
-	y_pred = lnregr.predict(X)
+	# y_pred = lnregr.predict(X)
 
 	# plotting data
 	# fig = plt.figure()
@@ -40,12 +40,12 @@ def useLinearRegression(X, y, fit_intercept=True, normalize=False):
 	# plt.show();
 
 
-	mse = mean_squared_error(y, y_pred)
-	print "Mean squared error regression loss: ", mse
-	mae = mean_absolute_error(y, y_pred)
-	print "Mean absolute error regression loss: ", mae
-	cv_scores = cross_val_score(lnregr, X, y, cv=11, scoring=scorer)
-	print "Cross validation scores: ", cv_scores
+	# mse = mean_squared_error(y, y_pred)
+	# print "Mean squared error regression loss: ", mse
+	# mae = mean_absolute_error(y, y_pred)
+	# print "Mean absolute error regression loss: ", mae
+	# cv_scores = cross_val_score(lnregr, X, y, cv=11, scoring=scorer)
+	# print "Cross validation scores: ", cv_scores
 
 
 def useRidgeRegression(X, y, alpha=0.1, max_iter=None):
@@ -55,13 +55,13 @@ def useRidgeRegression(X, y, alpha=0.1, max_iter=None):
 	# accuracy = accuracy_score(y, y_pred)
 	# print "accuracy: ", accuracy
 	print "ridge decision function: ", riregr.coef_, " X + ", riregr.intercept_
-	y_pred = riregr.predict(X)
-	mse = mean_squared_error(y, y_pred)
-	print "Mean squared error regression loss: ", mse
-	mae = mean_absolute_error(y, y_pred)
-	print "Mean absolute error regression loss: ", mae
-	cv_scores = cross_val_score(riregr, X, y, cv=11, scoring=scorer)
-	print "Cross validation scores: ", cv_scores
+	# y_pred = riregr.predict(X)
+	# mse = mean_squared_error(y, y_pred)
+	# print "Mean squared error regression loss: ", mse
+	# mae = mean_absolute_error(y, y_pred)
+	# print "Mean absolute error regression loss: ", mae
+	# cv_scores = cross_val_score(riregr, X, y, cv=11, scoring=scorer)
+	# print "Cross validation scores: ", cv_scores
 
 
 def useLasso(X, y, alpha=0.1):
@@ -71,13 +71,13 @@ def useLasso(X, y, alpha=0.1):
 	# accuracy = accuracy_score(y, y_pred)
 	# print "accuracy: ", accuracy
 	print "ridge decision function: ", lsregr.coef_, " X + ", lsregr.intercept_
-	y_pred = lsregr.predict(X)
-	mse = mean_squared_error(y, y_pred)
-	print "Mean squared error regression loss: ", mse
-	mae = mean_absolute_error(y, y_pred)
-	print "Mean absolute error regression loss: ", mae
-	cv_scores = cross_val_score(lsregr, X, y, cv=11, scoring=scorer)
-	print "Cross validation scores: ", cv_scores
+	# y_pred = lsregr.predict(X)
+	# mse = mean_squared_error(y, y_pred)
+	# print "Mean squared error regression loss: ", mse
+	# mae = mean_absolute_error(y, y_pred)
+	# print "Mean absolute error regression loss: ", mae
+	# cv_scores = cross_val_score(lsregr, X, y, cv=11, scoring=scorer)
+	# print "Cross validation scores: ", cv_scores
 
 
 def my_custom_loss_func(ground_truth, predictions):

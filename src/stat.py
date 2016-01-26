@@ -570,6 +570,8 @@ def checkFSharMetric():
 						if ft4[x] == twin_proc(ft4[i]): # same physical core; not same CPU id
 							ffs_metric += 3
 						elif ft4[x] != ft4[i]: # different physical core
+							ffs_metric += 9
+						else:
 							ffs_metric += 1
 			elif i >= 5 and i < 235441:
 				for x in xrange(i-5, i+5):
@@ -579,6 +581,8 @@ def checkFSharMetric():
 						if ft4[x] == twin_proc(ft4[i]):
 							ffs_metric += 3
 						elif ft4[x] != ft4[i]:
+							ffs_metric += 9
+						else:
 							ffs_metric += 1
 			else:
 				for x in xrange(i-5, 235446):
@@ -588,6 +592,8 @@ def checkFSharMetric():
 						if ft4[x] == twin_proc(ft4[i]):
 							ffs_metric += 3
 						elif ft4[x] != ft4[i]:
+							ffs_metric += 9
+						else:
 							ffs_metric += 1
 
 			ffsharing[i] = ffs_metric
