@@ -24,7 +24,8 @@ def useLinearRegression(X, y, fit_intercept=True, normalize=False):
 	# y_pred = lnregr.predict(X)
 	# accuracy = accuracy_score(y, y_pred)
 	# print "accuracy: ", accuracy
-	print "linear decision function: ", lnregr.coef_, " X + ", lnregr.intercept_
+	print "linear decision function: "
+	print lnregr.coef_, " X + ", lnregr.intercept_
 	# y_pred = lnregr.predict(X)
 
 	# plotting data
@@ -54,7 +55,8 @@ def useRidgeRegression(X, y, alpha=0.1, max_iter=None):
 	# y_pred = riregr.predict(X)
 	# accuracy = accuracy_score(y, y_pred)
 	# print "accuracy: ", accuracy
-	print "ridge decision function: ", riregr.coef_, " X + ", riregr.intercept_
+	print "ridge decision function: "
+	print riregr.coef_, " X + ", riregr.intercept_
 	# y_pred = riregr.predict(X)
 	# mse = mean_squared_error(y, y_pred)
 	# print "Mean squared error regression loss: ", mse
@@ -70,7 +72,8 @@ def useLasso(X, y, alpha=0.1):
 	# y_pred = riregr.predict(X)
 	# accuracy = accuracy_score(y, y_pred)
 	# print "accuracy: ", accuracy
-	print "ridge decision function: ", lsregr.coef_, " X + ", lsregr.intercept_
+	print "ridge decision function: "
+	print lsregr.coef_, " X + ", lsregr.intercept_
 	# y_pred = lsregr.predict(X)
 	# mse = mean_squared_error(y, y_pred)
 	# print "Mean squared error regression loss: ", mse
