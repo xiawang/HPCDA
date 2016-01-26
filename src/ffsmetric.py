@@ -912,6 +912,9 @@ def checkFSharMetric_5():
 	print "Data written..."
 	print "checkFSharMetric passed..." + '\n'
 
+
+
+
 ###################################################################
 #                              testing
 ###################################################################
@@ -920,4 +923,5 @@ def checkFSharMetric_5():
 # checkFSharMetric_2()
 # checkFSharMetric_3()
 # checkFSharMetric_4()
-checkFSharMetric_5()
+# checkFSharMetric_5()
+checkFSharMetric_6()
