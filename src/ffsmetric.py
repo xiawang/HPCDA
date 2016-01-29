@@ -1027,7 +1027,7 @@ def checkFSharMetric_6():
 	print count_d
 
 	# create list for the metric
-	ffsharing = [4.0]*235446
+	ffsharing = [5.0]*235446
 	counter  = 0.0
 
 	for i in xrange(235446):
@@ -1037,55 +1037,56 @@ def checkFSharMetric_6():
 
 			# convert raw CPU index to CPU cluster index
 			mregion = int(region)/k # calculated cluster index (1:32)
+			region_check = True if mregion == ft4[i] else False # if addr is close enough to the corresponding cluster mean
 
 			if i < 5:
-				for x in xrange(i+5): # within 10 rounds (short period of time)
-					fs = False
-					for j in xrange(i+5):
-						if ft4[j] == mregion:
-							fs = True
-					if mregion == twin_proc(ft4[x]):
-						if fs == False:
-							ffsharing[i] = 3.0 # same physical core, did not visit in a short time
+				fs = False
+				fst = False
+				for j in xrange(i+5):
+					if ft4[j] == mregion:
+						fs = True
+					if ft4[j] == twin_proc(mregion):
+						fst = True
+				if region_check == True: # addr near the corresponding cluster mean
+					ffsharing[i] = 3.0
+				else: # addr near the other cluster mean
+					if fs == False:
+						if fst == True:
+							ffsharing[i] = 2.0
 						else:
-							ffsharing[i] = 1.0 # same physical core, visited in 10 rounds
-					elif mregion != ft4[x]:
-						if fs == False:
-							ffsharing[i] = 2.0 # different physical core, did not visit in a short time
-						else:
-							ffsharing[i] = 0.0 # different physical core, visited in 10 rounds
+							ffsharing[i] = 4.0
+					else:
+						ffsharing[i] = 1.0
 			elif i >= 5 and i < 235441:
-				for x in xrange(i-5, i+5):
-					fs = False
-					for j in xrange(i-5, i+5):
-						if ft4[j] == mregion:
-							fs = True
-					if mregion == twin_proc(ft4[x]):
-						if fs == False:
-							ffsharing[i] = 3.0
-						else:
-							ffsharing[i] = 1.0
-					elif mregion != ft4[x]:
-						if fs == False:
+				fs = False
+				for j in xrange(i-5, i+5):
+					if ft4[j] == mregion:
+						fs = True
+				if region_check == True: # addr near the corresponding cluster mean
+					ffsharing[i] = 3.0
+				else: # addr near the other cluster mean
+					if fs == False:
+						if fst == True:
 							ffsharing[i] = 2.0
 						else:
-							ffsharing[i] = 0.0
+							ffsharing[i] = 4.0
+					else:
+						ffsharing[i] = 1.0
 			else:
-				for x in xrange(i-5, 235446):
-					fs = False
-					for j in xrange(i-5, 235446):
-						if ft4[j] == mregion:
-							fs = True
-					if mregion == twin_proc(ft4[x]):
-						if fs == False:
-							ffsharing[i] = 3.0
-						else:
-							ffsharing[i] = 1.0
-					elif mregion != ft4[x]:
-						if fs == False:
+				fs = False
+				for j in xrange(i-5, 235446):
+					if ft4[j] == mregion:
+						fs = True
+				if region_check == True: # addr near the corresponding cluster mean
+					ffsharing[i] = 3.0
+				else: # addr near the other cluster mean
+					if fs == False:
+						if fst == True:
 							ffsharing[i] = 2.0
 						else:
-							ffsharing[i] = 0.0
+							ffsharing[i] = 4.0
+					else:
+						ffsharing[i] = 1.0
 
 	for x in xrange(1,100):
 		print ffsharing[x]
