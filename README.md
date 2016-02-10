@@ -10,7 +10,7 @@ Directories
 - **data**: The data folder contains all data csv files directly from Mitos or temporary data generated during the analysis process.
 - **figs**: The figs folder contains all figures generated from the data analysis process.
 - **src**: The src folder contains main.py as well as all other helper functions, models, and automations.
-- **tsrc**: The src folder contains some example usage of Scikit-learn machine-learning functions. (Unrelated to the project itself.)
+- **tsrc**: The tsrc folder contains some example usage of Scikit-learn machine-learning functions on the Titanic data set. (Unrelated to the project itself.)
 
 Note
 --------------
