@@ -7,14 +7,10 @@ HPC Data Analysis is a project for understanding Supercomputers' memory access p
 
 Directories
 --------------
-- data
-  The data folder contains all data csv files directly from Mitos or temporary data generated during the analysis process.
-- figs
-  The figs folder contains all figures generated from the data analysis process.
-- src
-  The src folder contains main.py as well as all other helper functions, models, and automations.
-- tsrc
-  The src folder contains some example usage of Scikit-learn machine-learning functions. (Unrelated to the project itself.)
+- **data**: The data folder contains all data csv files directly from Mitos or temporary data generated during the analysis process.
+- **figs**: The figs folder contains all figures generated from the data analysis process.
+- **src**: The src folder contains main.py as well as all other helper functions, models, and automations.
+- **tsrc**: The src folder contains some example usage of Scikit-learn machine-learning functions. (Unrelated to the project itself.)
 
 Note
 --------------
