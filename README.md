@@ -19,5 +19,6 @@ Directories
 Note
 --------------
 Please do not ran the file **main.py** directly, as it will extract and generate new data files and serves only as an automation for checking helper functions.
+
 The regression model is stored in the file **regression.py**, and by running this file, we can check the factor of each metric that
 contribute to the time latency for memory access (the higher the better a metric is). The use of metric is annotated in this file.
