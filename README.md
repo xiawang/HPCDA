@@ -20,3 +20,6 @@ The regression model is stored in the file **regression.py**, and by running thi
 contribute to the time latency for memory access (the higher the better a metric is). The use of metric is annotated in this file.
 
 The *fuzzy-false-sharing-metric* is stored in the file **ffsmetric.py**. It contains several slightly different variations of the metric which also differ in performance. (Currently, the label-assignment version is better than distribution-accumulation ones.)
+
+There are also some test files in the **src** directory that are only for test and other trivaial purposes.
+
