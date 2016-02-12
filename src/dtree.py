@@ -20,6 +20,8 @@ def useDecisionTree(X, y, criterion='entropy'):
 	dtclf = DecisionTreeClassifier(criterion=criterion)
 	print cross_val_score(dtclf, X, y, cv=10)
 
+def useCustomizedDecisionTree(X, y):
+	pass
 
 ################################################################################
 # training
