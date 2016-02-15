@@ -1281,4 +1281,6 @@ def checkFSharMetric_7():
 # checkFSharMetric_4()
 # checkFSharMetric_5()
 # checkFSharMetric_6()
+
+# Note: could be very slow
 checkFSharMetric_7()
