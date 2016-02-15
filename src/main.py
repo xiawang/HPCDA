@@ -102,11 +102,11 @@ def test3():
 	print "Test3 passed..." + '\n'
 
 
-def main():
-	# run tests
-	# test1()
-	# test2()
-	test3()
+# def main():
+# 	# run tests
+# 	# test1()
+# 	# test2()
+# 	test3()
 
-# automation
-if __name__ == "__main__": main()
+# # automation
+# if __name__ == "__main__": main()
