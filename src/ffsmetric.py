@@ -1,5 +1,6 @@
 import os
 import csv
+import math
 import numpy as np; np.random.seed(0)
 # import seaborn as sns; sns.set(color_codes=True)
 # import matplotlib.pyplot as plt
@@ -1133,19 +1134,6 @@ def checkFSharMetric_7():
 	          16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], \
 	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
 
-	# build kde list for estimating distribution of address
-	kdeList = []
-	for i in xrange(235446):
-		kdeList.append([ft1[i]])
-	kde = KernelDensity(kernel='gaussian', bandwidth=0.2).fit(kdeList)
-	kdeScores = kde.score_samples(kdeList)
-
-	print "kde list built..."
-	print ""
-	for i in xrange(30):
-		print kdeScores[i]
-	print ""
-
 	# gather value for addr of each CPU ID
 	for i in xrange(235446):
 		if ft2[i] == 1:  # L1 cache
@@ -1169,10 +1157,18 @@ def checkFSharMetric_7():
 	std_addr = [0.0]*32*k # standard deviation for addresses of each CPU
 	calc_distr = [0.0]*32 # calculated gaussian distribution probability
 
+	# build kde list for estimating distribution of address
+	kdeList = []
+	kdeScores = [0]*235446
+
 	for l in xrange(32):
 		CPU_d = [] # copying addr data for each CPU
 		for i in xrange(int(len(myDict[l]))):
 			CPU_d.append([myDict[l][i]])
+
+		# build kde for current cpu
+		kde = KernelDensity(kernel='gaussian', bandwidth=0.2).fit(CPU_d)
+		kdeList.append(kde)
 
 		# kmeans clustering for address
 		y = [] # array with cluster assignments
@@ -1228,6 +1224,8 @@ def checkFSharMetric_7():
 	ffsharing = [0.0]*235446
 	counter  = 0.0
 
+	print "Begin to calculate probability for all data points..."
+	print ""
 	for i in xrange(235446):
 		if ft2[i] == 1:  # L1 cache
 		    # calculate raw CPU index by smallest distance
@@ -1248,15 +1246,18 @@ def checkFSharMetric_7():
 
 			if i < 5:
 				for x in xrange(i+5): # within 10 rounds (short period of time)
-					ffs_temp = kdeScores[x]
+					kde = kdeList[ft4[i]]
+					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					ffs_metric += ffs_temp
 			elif i >= 5 and i < 235441:
 				for x in xrange(i-5, i+5):
-					ffs_temp = kdeScores[x]
+					kde = kdeList[ft4[i]]
+					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					ffs_metric += ffs_temp
 			else:
 				for x in xrange(i-5, 235446):
-					ffs_temp = kdeScores[x]
+					kde = kdeList[ft4[i]]
+					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					ffs_metric += ffs_temp
 
 			ffsharing[i] = ffs_metric

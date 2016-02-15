@@ -71,11 +71,16 @@ def test3():
 def test4():
 	X = [[1], [3], [5], [3], [1], [4], [7], [9], [10], [8], [3], [1]]
 	# X = np.array([[1,1], [1,3], [1,5], [1,3], [1,1], [1,4], [1,7], [1,9], [1,10], [1,8], [1,3], [1,1]])
-	kde = KernelDensity(kernel='gaussian', bandwidth=0.2).fit(X)
+	kde = KernelDensity(kernel='gaussian', bandwidth=0.4).fit(X)
 	scores = kde.score_samples(X)
-	# for x in xrange(len(scores)):
-	# 	scores[x] = math.exp(scores[x])
+	for x in xrange(len(scores)):
+		scores[x] = math.exp(scores[x])
 	print scores
+	X_test = [[1], [2], [2], [1], [3], [6], [8], [9], [10], [8], [3], [1]]
+	density = kde.score_samples(X_test)
+	for x in xrange(len(density)):
+		density[x] = math.exp(density[x])
+	print density
 
 
 
