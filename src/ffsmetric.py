@@ -1167,7 +1167,7 @@ def checkFSharMetric_7():
 			CPU_d.append([myDict[l][i]])
 
 		# build kde for current cpu
-		kde = KernelDensity(kernel='gaussian', bandwidth=0.2).fit(CPU_d)
+		kde = KernelDensity(kernel='gaussian', bandwidth=0.3).fit(CPU_d)
 		kdeList.append(kde)
 
 		# kmeans clustering for address
@@ -1266,7 +1266,7 @@ def checkFSharMetric_7():
 		print ffsharing[x]
 
 	my_list = zip(ffsharing)
-	writeCSV('test_ffsharing_1.csv', my_list)
+	writeCSV('test_ffsharing_2.csv', my_list)
 	print "Data written..."
 	print "checkFSharMetric passed..." + '\n'
 

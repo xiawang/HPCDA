@@ -386,14 +386,14 @@ def checkThreadMetric():
 	for i in xrange(235446):
 		if ft2[i] not in myDict:
 			myDict[ft2[i]] = ft1[i]
-			tidcpumetric.append(0)
+			tidcpumetric.append(1)
 		else:
 			if ft1[i] == myDict[ft2[i]]:
-				tidcpumetric.append(0)
+				tidcpumetric.append(1)
 			else:
 				# if for the same thread cpu changes
 				myDict[ft2[i]] = ft1[i]
-				tidcpumetric.append(1)
+				tidcpumetric.append(0)
 
 	# then write out tesing csv
 	my_list = zip(tidcpumetric)
@@ -691,6 +691,6 @@ def checkXYZ():
 # checkCPU()
 # checkDataSrc_Latency()
 # checkSharMetric()
-# checkThreadMetric()
-checkFSharMetric()
+checkThreadMetric()
+# checkFSharMetric()
 # checkXYZ()
