@@ -1167,7 +1167,7 @@ def checkFSharMetric_7():
 			CPU_d.append([myDict[l][i]])
 
 		# build kde for current cpu
-		kde = KernelDensity(kernel='gaussian', bandwidth=0.3).fit(CPU_d)
+		kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(CPU_d)
 		kdeList.append(kde)
 
 		# kmeans clustering for address
@@ -1221,7 +1221,7 @@ def checkFSharMetric_7():
 	print count_d
 
 	# create list for the metric
-	ffsharing = [0.0]*235446
+	ffsharing = [1.0]*235446
 	counter  = 0.0
 
 	print "Begin to calculate probability for all data points..."
@@ -1244,20 +1244,23 @@ def checkFSharMetric_7():
 			mregion = int(region)/k # calculated cluster index
 			ffs_metric = 0.0
 
+			kde = kdeList[ft4[i]]
+			std_score = math.exp(kde.score_samples([[ft1[i]]])[0])
+
 			if i < 5:
 				for x in xrange(i+5): # within 10 rounds (short period of time)
-					kde = kdeList[ft4[i]]
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
+					ffs_temp = abs(ffs_temp - std_score)
 					ffs_metric += ffs_temp
 			elif i >= 5 and i < 235441:
 				for x in xrange(i-5, i+5):
-					kde = kdeList[ft4[i]]
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
+					ffs_temp = abs(ffs_temp - std_score)
 					ffs_metric += ffs_temp
 			else:
 				for x in xrange(i-5, 235446):
-					kde = kdeList[ft4[i]]
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
+					ffs_temp = abs(ffs_temp - std_score)
 					ffs_metric += ffs_temp
 
 			ffsharing[i] = ffs_metric
@@ -1266,7 +1269,7 @@ def checkFSharMetric_7():
 		print ffsharing[x]
 
 	my_list = zip(ffsharing)
-	writeCSV('test_ffsharing_2.csv', my_list)
+	writeCSV('test_ffsharing_5.csv', my_list)
 	print "Data written..."
 	print "checkFSharMetric passed..." + '\n'
 

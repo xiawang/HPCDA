@@ -41,6 +41,7 @@ class Data:
         Parameters
         --------------------
             filename -- string, filename
+            ify      -- if y (for supervised learning) is in the data set
         """
         
         # determine filename
