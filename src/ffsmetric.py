@@ -1156,10 +1156,12 @@ def checkFSharMetric_7():
 	# create list for the metric
 	ffsharing = [1.0]*235446
 	counter  = 0.0
+	max_CPU_acs_in_window = 0
 
 	print "Begin to calculate probability for all data points..."
 	print ""
 	for i in xrange(235446):
+		cur_max_CPU_acs = 0
 		if ft2[i] == 1:  # L1 cache
 			ffs_metric = 0.0
 
@@ -1168,24 +1170,34 @@ def checkFSharMetric_7():
 
 			if i < 5:
 				for x in xrange(i+5): # within 10 rounds (short period of time)
+					if ft4[x] == ft4[i]:
+						cur_max_CPU_acs += 1
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					ffs_temp = abs(ffs_temp - std_score)
 					ffs_metric += ffs_temp
 			elif i >= 5 and i < 235441:
 				for x in xrange(i-5, i+5):
+					if ft4[x] == ft4[i]:
+						cur_max_CPU_acs += 1
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					ffs_temp = abs(ffs_temp - std_score)
 					ffs_metric += ffs_temp
 			else:
 				for x in xrange(i-5, 235446):
+					if ft4[x] == ft4[i]:
+						cur_max_CPU_acs += 1
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					ffs_temp = abs(ffs_temp - std_score)
 					ffs_metric += ffs_temp
 
 			ffsharing[i] = ffs_metric
+			if cur_max_CPU_acs >= max_CPU_acs_in_window:
+				max_CPU_acs_in_window = cur_max_CPU_acs
 
 	for x in xrange(1,100):
 		print ffsharing[x]
+	print ""
+	print "maximum CPU access: ", max_CPU_acs_in_window
 
 	my_list = zip(ffsharing)
 	writeCSV('test_ffsharing_6.csv', my_list)

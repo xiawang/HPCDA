@@ -4,6 +4,7 @@ import numpy as np; np.random.seed(12345)
 from scipy import stats
 import statsmodels.api as sm
 import matplotlib.pyplot as plt
+import seaborn as sns; sns.set(color_codes=True)
 from statsmodels.distributions.mixture_rvs import mixture_rvs
 from scipy.stats.distributions import norm
 from sklearn.neighbors import KernelDensity
@@ -70,7 +71,6 @@ def test3():
 
 def test4():
 	X = [[1], [2], [3], [3], [2], [8], [8], [9], [10], [12], [11], [9]]
-	# X = np.array([[1,1], [1,3], [1,5], [1,3], [1,1], [1,4], [1,7], [1,9], [1,10], [1,8], [1,3], [1,1]])
 	kde = KernelDensity(kernel='gaussian', bandwidth=0.4).fit(X)
 	scores = kde.score_samples(X)
 	for x in xrange(len(scores)):
@@ -83,11 +83,87 @@ def test4():
 	print density
 
 
+def test5():
+	X = [[1], [2], [3], [3], [2], [8], [8], [9], [10], [12], [11], [9]]
+	kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(X)
+	scores = kde.score_samples(X)
+	print scores
+	X_test = [[1], [2], [2], [1], [5], [6], [6], [7], [9], [10], [8], [7]]
+	density = kde.score_samples(X_test)
+	print density
+	# print
+	g = sns.distplot(X);
+	h = sns.distplot(X_test);
+	sns.plt.show();
+
+
+def test6():
+	X = [[1], [2], [3], [3], [2], [8], [8], [9], [10], [12], [11], [9]]
+	X_1 = sum(X, [])
+	kde1 = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(X)
+
+	Y = [[1], [2], [2], [1], [5], [6], [6], [7], [9], [10], [8], [7]]
+	Y_1 = sum(Y, [])
+	kde2 = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(Y)
+
+	# scores with own kde
+	scores1 = kde1.score_samples(X)
+	# for x in xrange(len(scores1)):
+	# 	scores1[x] = math.exp(scores1[x])
+	print scores1
+	print ""
+	scores2 = kde2.score_samples(Y)
+	# for x in xrange(len(scores2)):
+	# 	scores2[x] = math.exp(scores2[x])
+	print scores2
+	print ""
+
+	# scores with others kde
+	density1 = kde1.score_samples(Y)
+	# for x in xrange(len(density1)):
+	# 	density1[x] = math.exp(density1[x])
+	print density1
+	print ""
+	density2 = kde2.score_samples(X)
+	# for x in xrange(len(density2)):
+	# 	density2[x] = math.exp(density2[x])
+	print density2
+	print ""
+
+	# general test
+	test_set = []
+	for x in xrange(0,14):
+		test_set.append([x])
+	test_res1 = kde1.score_samples(test_set)
+	print test_res1
+	test_res2 = kde2.score_samples(test_set)
+	print test_res2
+	test_res3 = map(lambda x,y:abs(x-y), test_res1,test_res2)
+	belonging = []
+	for x in xrange(len(test_res1)):
+		if test_res1[x] - test_res2[x] > 0:
+			belonging.append(1)
+		elif test_res1[x] - test_res2[x] < 0:
+			belonging.append(2)
+		else:
+			belonging.append(3)
+	for x in xrange(len(test_res3)):
+		print x," ",test_res3[x]," - ",belonging[x]
+	print ""
+
+	# print
+	g = sns.distplot(X);
+	h = sns.distplot(Y);
+	sns.plt.show();
+
+
 
 # test1()
 # test2()
 # test3()
-test4()
+# test4()
+# test5()
+test6()
 
 # x = np.concatenate([norm(-1, 1.).rvs(400),
 #                     norm(1, 0.3).rvs(100)])
