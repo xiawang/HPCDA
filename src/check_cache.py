@@ -38,8 +38,14 @@ def checkCache():
 	# plot using pandas and seaborn
 	# g = sns.distplot(feature1);
 	fig = plt.figure()
+	fig.suptitle('Caching level', fontsize=12, fontweight='bold')
 	ax = fig.add_subplot(111)
 	ax.plot(feature2, feature1, 'b.')
+	ax.set_xlabel('caching level')
+	ax.set_ylabel('latency (cycles)')
+
+	axes = plt.gca()
+	axes.set_xlim([-4,6])
 
 	# sns.plt.show();
 	plt.show();
