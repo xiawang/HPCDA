@@ -1139,24 +1139,6 @@ def checkFSharMetric_7():
 		if ft2[i] == 1:  # L1 cache
 			myDict[ft4[i]].append(ft1[i])
 
-	# calculate mean address for each CPU
-	means = [0.0]*32
-	for i in xrange(32):
-		addrs = myDict[i]
-		means[i] = sum(addrs) / float(len(addrs))
-		print "mean[", i, "]: ", means[i]
-
-	# for test max and min addr in the first CPU
-	print max(myDict[0])
-	print min(myDict[0])
-
-	# fuzzy false sharing metric, k is assigned to be 4 in this case by
-	# plotting out addresses, we could see there are roughly 4 clusters
-	k = 4
-	avrg_addr = [0.0]*32*k # mean for each cluster in 32 CPUs, k copies
-	std_addr = [0.0]*32*k # standard deviation for addresses of each CPU
-	calc_distr = [0.0]*32 # calculated gaussian distribution probability
-
 	# build kde list for estimating distribution of address
 	kdeList = []
 	kdeScores = [0]*235446
@@ -1170,55 +1152,6 @@ def checkFSharMetric_7():
 		kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(CPU_d)
 		kdeList.append(kde)
 
-		# kmeans clustering for address
-		y = [] # array with cluster assignments
-		y, centers, labels_unique = useKMeans(CPU_d, y, n_clusters=k)
-
-		# calculate mean addresses for each cluster
-		sample_d = [0.0]*k # mean addr for the cluster
-		sig_d = [0.0]*k # significance metric for each cluster
-		for i in xrange(k):
-			sum_k = 0.0
-			count_k = 0
-			for j in xrange(int(len(myDict[l]))):
-				if y[j] == i:
-					sum_k += myDict[l][j]
-					count_k += 1
-			mean_k = sum_k / count_k
-			sample_d[i] = mean_k
-
-		# assign mean address of each cluster to the variable
-		for i in xrange(k):
-			avrg_addr[l*k+i] = sample_d[i]
-
-		# assign significance metric each cluster to the variable
-		for i in xrange(k):
-			sig_d[i] = (sample_d[0]-sample_d[i]) / sample_d[i] * 100.0
-
-		# calculate standard deviation for each cluster of a CPU
-		for i in xrange(k):
-			dev = 0.0
-			stddev = 0.0
-			for j in xrange(int(len(myDict[l]))):
-				if y[j] == i:
-					dev += (myDict[l][j] - avrg_addr[l*k+i])**2
-			stddev = dev**0.5
-			std_addr[l*k+i] = stddev
-
-		print "cpu: ", l
-		print sample_d
-
-	print " "
-	print avrg_addr
-	print " "
-	print "standard deviation: "
-	print std_addr
-
-	# calculate number of elements stored in the dic
-	count_d = 0
-	for i in xrange(32):
-		count_d += int(len(myDict[i]))
-	print count_d
 
 	# create list for the metric
 	ffsharing = [1.0]*235446
@@ -1228,20 +1161,6 @@ def checkFSharMetric_7():
 	print ""
 	for i in xrange(235446):
 		if ft2[i] == 1:  # L1 cache
-		    # calculate raw CPU index by smallest distance
-			region = closest_addr_region(avrg_addr, ft1[i])
-
-			CPU_id = ft4[i]
-			act_reg = [] # means for clusters of address
-			for j in xrange(k):
-				act_reg.append(avrg_addr[CPU_id*k+j])
-			act_reg_raw = closest_addr_region(act_reg, ft1[i]) # actual raw value for mean
-			act_mean = act_reg[act_reg_raw] # actual mean value for the correponding cluster
-			act_index = CPU_id*k + act_reg_raw # actual index for stddev value
-			act_stddev = std_addr[act_index] # actual corresponding stddev
-
-			# convert raw CPU index to CPU cluster index
-			mregion = int(region)/k # calculated cluster index
 			ffs_metric = 0.0
 
 			kde = kdeList[ft4[i]]
@@ -1269,7 +1188,7 @@ def checkFSharMetric_7():
 		print ffsharing[x]
 
 	my_list = zip(ffsharing)
-	writeCSV('test_ffsharing_5.csv', my_list)
+	writeCSV('test_ffsharing_6.csv', my_list)
 	print "Data written..."
 	print "checkFSharMetric passed..." + '\n'
 
