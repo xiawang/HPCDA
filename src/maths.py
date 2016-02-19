@@ -108,25 +108,25 @@ def test6():
 
 	# scores with own kde
 	scores1 = kde1.score_samples(X)
-	# for x in xrange(len(scores1)):
-	# 	scores1[x] = math.exp(scores1[x])
+	for x in xrange(len(scores1)):
+		scores1[x] = math.exp(scores1[x])
 	print scores1
 	print ""
 	scores2 = kde2.score_samples(Y)
-	# for x in xrange(len(scores2)):
-	# 	scores2[x] = math.exp(scores2[x])
+	for x in xrange(len(scores2)):
+		scores2[x] = math.exp(scores2[x])
 	print scores2
 	print ""
 
 	# scores with others kde
 	density1 = kde1.score_samples(Y)
-	# for x in xrange(len(density1)):
-	# 	density1[x] = math.exp(density1[x])
+	for x in xrange(len(density1)):
+		density1[x] = math.exp(density1[x])
 	print density1
 	print ""
 	density2 = kde2.score_samples(X)
-	# for x in xrange(len(density2)):
-	# 	density2[x] = math.exp(density2[x])
+	for x in xrange(len(density2)):
+		density2[x] = math.exp(density2[x])
 	print density2
 	print ""
 
@@ -135,8 +135,12 @@ def test6():
 	for x in xrange(0,14):
 		test_set.append([x])
 	test_res1 = kde1.score_samples(test_set)
+	for x in xrange(len(test_res1)):
+		test_res1[x] = math.exp(test_res1[x])
 	print test_res1
 	test_res2 = kde2.score_samples(test_set)
+	for x in xrange(len(test_res2)):
+		test_res2[x] = math.exp(test_res2[x])
 	print test_res2
 	test_res3 = map(lambda x,y:abs(x-y), test_res1,test_res2)
 	belonging = []
