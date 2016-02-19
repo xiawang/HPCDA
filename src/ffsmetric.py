@@ -1154,7 +1154,7 @@ def checkFSharMetric_7():
 
 
 	# create list for the metric
-	ffsharing = [1.0]*235446
+	ffsharing = [0.0]*235446
 	counter  = 0.0
 
 	print "Begin to calculate probability for all data points..."
@@ -1166,30 +1166,30 @@ def checkFSharMetric_7():
 			kde = kdeList[ft4[i]]
 			std_score = math.exp(kde.score_samples([[ft1[i]]])[0])
 
-			if i < 5:
-				for x in xrange(i+5): # within 10 rounds (short period of time)
+			if i < 3:
+				for x in xrange(i+3): # within 10 rounds (short period of time)
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
-					# std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
-					# penalty = 1.0 - abs(ffs_temp - std_temp)
-					ffs_temp = abs(ffs_temp - std_score)
+					std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
+					penalty = 1.0 - abs(ffs_temp - std_temp)
+					ffs_temp = abs(ffs_temp - std_score) + penalty
 					ffs_metric += ffs_temp
-				ffs_metric = ffs_metric / 5.0
-			elif i >= 5 and i < 235441:
-				for x in xrange(i-5, i+5):
+				ffs_metric = ffs_metric / (i+1)
+			elif i >= 3 and i < 235441:
+				for x in xrange(i-3, i+3):
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
-					# std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
-					# penalty = 1.0 - abs(ffs_temp - std_temp)
-					ffs_temp = abs(ffs_temp - std_score)
+					std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
+					penalty = 1.0 - abs(ffs_temp - std_temp)
+					ffs_temp = abs(ffs_temp - std_score) + penalty
 					ffs_metric += ffs_temp
-				ffs_metric = ffs_metric / 10.0
+				ffs_metric = ffs_metric / 6.0
 			else:
-				for x in xrange(i-5, 235446):
+				for x in xrange(i-3, 235446):
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
-					# std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
-					# penalty = 1.0 - abs(ffs_temp - std_temp)
-					ffs_temp = abs(ffs_temp - std_score)
+					std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
+					penalty = 1.0 - abs(ffs_temp - std_temp)
+					ffs_temp = abs(ffs_temp - std_score) + penalty
 					ffs_metric += ffs_temp
-				ffs_metric = ffs_metric / 5.0
+				ffs_metric = ffs_metric / (235448-i)
 
 			ffsharing[i] = ffs_metric
 

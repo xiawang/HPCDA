@@ -14,7 +14,7 @@ from kmeans import *
 from optimize import *
 from kmeans import *
 
-def checkLatency():
+def checkCPUtid():
 	"""
 	Customized function for checking the latency and ffs metric.
 	"""
@@ -22,35 +22,26 @@ def checkLatency():
 	data1 = Data()
 	data1.load('test_latency.csv',ify=False)
 	data2 = Data()
-	data2.load('test_ffsharing_6.csv',ify=False)
+	data2.load('test_tidupumetric.csv',ify=False)
 
 	X_1,y_1 = data1.getXy()
 	X_2,y_2 = data2.getXy()
 	feature1 = []
 	feature2 = []
-	print "Latency & ffs data loaded..."
-
-	ft2 = extract('samples.csv', 17, start=1)
-	ft2 = toInteger(ft2) # Cache raw
-	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
+	print "Latency & cputid data loaded..."
 
 	for i in range(235446):
-		# if ft2[i] == 1:
-			feature1.append(float(X_1[i][0]))
-			feature2.append(float(X_2[i][0]))
-	
-	print "Latency & ffs data converted to numpy array..."
+	    feature1.append(float(X_1[i][0]))
+	    feature2.append(float(X_2[i][0]))
+	print "Latency & cputid data converted to numpy array..."
 
 	# plot using pandas and seaborn
 	# g = sns.distplot(feature1);
 	fig = plt.figure()
-	fig.suptitle('Fuzzy-false-sharing metric', fontsize=12, fontweight='bold')
 	ax = fig.add_subplot(111)
 	ax.plot(feature2, feature1, 'b.')
-	ax.set_xlabel('ffs metric')
-	ax.set_ylabel('latency (cycles)')
 	axes = plt.gca()
-	axes.set_xlim([-0.5,3])
+	axes.set_xlim([-0.5,1.5])
 
 	# sns.plt.show();
 	plt.show();
@@ -61,4 +52,4 @@ def checkLatency():
 # sns.regplot(x=x, y=y);
 # sns.plt.show();
 
-checkLatency()
+checkCPUtid()
