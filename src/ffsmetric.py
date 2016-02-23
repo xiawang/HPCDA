@@ -1171,35 +1171,35 @@ def checkFSharMetric_7():
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
 					penalty = 1.0 - abs(ffs_temp - std_temp)
-					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
 					ffs_temp = abs(ffs_temp - std_score) + penalty
 					ffs_metric += ffs_temp
 				for x in xrange(i+1,i+4): # within 10 rounds (short period of time)
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
 					penalty = 1.0 - abs(ffs_temp - std_temp)
-					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
 					ffs_temp = abs(ffs_temp - std_score) + penalty
 					ffs_metric += ffs_temp
 				ffs_metric = ffs_metric / (i+3)
-				# print ""
+				print ""
 			elif i >= 3 and i < 235443:
 				for x in xrange(i-3, i):
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
 					penalty = 1.0 - abs(ffs_temp - std_temp)
-					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
 					ffs_temp = abs(ffs_temp - std_score) + penalty
 					ffs_metric += ffs_temp
 				for x in xrange(i+1, i+4):
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
 					std_temp = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
 					penalty = 1.0 - abs(ffs_temp - std_temp)
-					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
 					ffs_temp = abs(ffs_temp - std_score) + penalty
 					ffs_metric += ffs_temp
 				ffs_metric = ffs_metric / 6.0
-				# print ""
+				print ""
 			else:
 				for x in xrange(i-3, i):
 					ffs_temp = math.exp(kde.score_samples([[ft1[x]]])[0])
@@ -1347,5 +1347,5 @@ def checkFSharMetric_8():
 # checkFSharMetric_6()
 
 # Note: could be very slow
-# checkFSharMetric_7()
-checkFSharMetric_8()
+checkFSharMetric_7()
+# checkFSharMetric_8()
