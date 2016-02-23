@@ -22,7 +22,7 @@ def checkLatency():
 	data1 = Data()
 	data1.load('test_latency.csv',ify=False)
 	data2 = Data()
-	data2.load('test_ffsharing_6.csv',ify=False)
+	data2.load('test_ffsharing_7.csv',ify=False)
 
 	X_1,y_1 = data1.getXy()
 	X_2,y_2 = data2.getXy()
@@ -50,7 +50,7 @@ def checkLatency():
 	ax.set_xlabel('ffs metric')
 	ax.set_ylabel('latency (cycles)')
 	axes = plt.gca()
-	axes.set_xlim([-0.5,3])
+	# axes.set_xlim([-0.5,3])
 
 	# sns.plt.show();
 	plt.show();
