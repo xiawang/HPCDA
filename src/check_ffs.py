@@ -22,7 +22,7 @@ def checkLatency():
 	data1 = Data()
 	data1.load('test_latency.csv',ify=False)
 	data2 = Data()
-	data2.load('test_ffsharing_7.csv',ify=False)
+	data2.load('test_ffsharing_8.csv',ify=False)
 
 	X_1,y_1 = data1.getXy()
 	X_2,y_2 = data2.getXy()

@@ -1291,37 +1291,63 @@ def checkFSharMetric_8():
 			ffs_metric = 0.0
 
 			kde = kdeList[ft4[i]]
-			std_score = math.exp(kde.score_samples([[ft1[i]]])[0])
+			std_score1 = math.exp(kde.score_samples([[ft1[i]]])[0]) # kde i; addr i
 
 			if i < 3:
-				for x in xrange(0,i-1):
-					if ft4[i] == ft4[x]:
-						ffs_temp = abs(ft1[i] - ft1[x])
-						ffs_metric += ffs_temp
-				for x in xrange(i+1,i+4):
-					if ft4[i] == ft4[x]:
-						ffs_temp = abs(ft1[i] - ft1[x])
-						ffs_metric += ffs_temp
+				for x in xrange(0,i-1): # within 10 rounds (short period of time)
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					penalty = 1.0 - max(abs(std_score2 - std_score3), abs(std_score1 - std_score4))
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				for x in xrange(i+1,i+4): # within 10 rounds (short period of time)
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0])
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0])
+					penalty = 1.0 - max(abs(std_score2 - std_score3), abs(std_score1 - std_score4))
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
 				ffs_metric = ffs_metric / (i+3)
+				# print ""
 			elif i >= 3 and i < 235443:
 				for x in xrange(i-3, i):
-					if ft4[i] == ft4[x]:
-						ffs_temp = abs(ft1[i] - ft1[x])
-						ffs_metric += ffs_temp
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0])
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0])
+					penalty = 1.0 - max(abs(std_score2 - std_score3), abs(std_score1 - std_score4))
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
 				for x in xrange(i+1, i+4):
-					if ft4[i] == ft4[x]:
-						ffs_temp = abs(ft1[i] - ft1[x])
-						ffs_metric += ffs_temp
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0])
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0])
+					penalty = 1.0 - max(abs(std_score2 - std_score3), abs(std_score1 - std_score4))
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
 				ffs_metric = ffs_metric / 6.0
+				# print ""
 			else:
 				for x in xrange(i-3, i):
-					if ft4[i] == ft4[x]:
-						ffs_temp = abs(ft1[i] - ft1[x])
-						ffs_metric += ffs_temp
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0])
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0])
+					penalty = 1.0 - max(abs(std_score2 - std_score3), abs(std_score1 - std_score4))
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
 				for x in xrange(i+1, 235446):
-					if ft4[i] == ft4[x]:
-						ffs_temp = abs(ft1[i] - ft1[x])
-						ffs_metric += ffs_temp
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0])
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0])
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0])
+					penalty = 1.0 - max(abs(std_score2 - std_score3), abs(std_score1 - std_score4))
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
 				ffs_metric = ffs_metric / (235448-i)
 
 			ffsharing[i] = ffs_metric
@@ -1336,6 +1362,146 @@ def checkFSharMetric_8():
 
 
 ###################################################################
+#                    Fuzzy False Sharing V9
+###################################################################
+
+def checkFSharMetric_9():
+	"""
+	Customized function for checking the false sharing metric.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 14, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	ft3 = extract('samples.csv', 13, start=1)
+	ft4 = extract('samples.csv', 15, start=1)
+	print "type ft1: ", type(ft1[1])
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toLong(toFloat(ft1)) # data address
+	ft2 = toInteger(ft2) # Cache raw
+	ft3 = toInteger(ft3) # timestamp
+	ft4 = toInteger(ft4) # CPU
+	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
+	print "Data optimized..."
+
+	my_list = zip(ft1,ft4,ft2,ft3)
+	writeCSV('test_fsharing.csv', my_list)
+	print "Data written..."
+
+	# build dictionary for the metric (corresponding to 32 CPUs)
+	myDict = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], \
+	          8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [],\
+	          16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], \
+	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
+
+	# gather value for addr of each CPU ID
+	for i in xrange(235446):
+		if ft2[i] == 1:  # L1 cache
+			myDict[ft4[i]].append(ft1[i])
+
+	# build kde list for estimating distribution of address
+	kdeList = []
+	kdeScores = [0]*235446
+
+	for l in xrange(32):
+		CPU_d = [] # copying addr data for each CPU
+		for i in xrange(int(len(myDict[l]))):
+			CPU_d.append([myDict[l][i]])
+
+		# build kde for current cpu
+		kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(CPU_d)
+		kdeList.append(kde)
+
+
+	# create list for the metric
+	ffsharing = [0.0]*235446
+	counter  = 0.0
+
+	print "Begin to calculate probability for all data points..."
+	print ""
+	for i in xrange(235446):
+		if ft2[i] == 1:  # L1 cache
+			ffs_metric = 0.0
+
+			kde = kdeList[ft4[i]]
+			std_score1 = math.exp(kde.score_samples([[ft1[i]]])[0]) # kde i; addr i
+
+			if i < 3:
+				for x in xrange(0,i-1): # within 10 rounds (short period of time)
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				for x in xrange(i+1,i+4): # within 10 rounds (short period of time)
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				ffs_metric = ffs_metric / (i+3)
+				# print ""
+			elif i >= 3 and i < 235443:
+				for x in xrange(i-3, i):
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				for x in xrange(i+1, i+4):
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				ffs_metric = ffs_metric / 6.0
+				# print ""
+			else:
+				for x in xrange(i-3, i):
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				for x in xrange(i+1, 235446):
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				ffs_metric = ffs_metric / (235448-i)
+
+			ffsharing[i] = ffs_metric
+
+	for x in xrange(1,100):
+		print ffsharing[x]
+
+	my_list = zip(ffsharing)
+	writeCSV('test_ffsharing_8.csv', my_list)
+	print "Data written..."
+	print "checkFSharMetric passed..." + '\n'
+
+###################################################################
 #                              testing
 ###################################################################
 
@@ -1347,5 +1513,6 @@ def checkFSharMetric_8():
 # checkFSharMetric_6()
 
 # Note: could be very slow
-checkFSharMetric_7()
+# checkFSharMetric_7()
 # checkFSharMetric_8()
+checkFSharMetric_9()

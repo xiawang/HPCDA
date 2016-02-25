@@ -117,7 +117,7 @@ cpu.load('test_cpu.csv',ify=False)
 data_x.load('test_x.csv',ify=False)
 data_y.load('test_y.csv',ify=False)
 data_z.load('test_z.csv',ify=False)
-data_ffshar.load('test_ffsharing_6.csv',ify=False) # fuzzy false sharing
+data_ffshar.load('test_ffsharing_8.csv',ify=False) # fuzzy false sharing
 
 X_1,y_1 = data_lat.getXy()
 X_2,y_2 = data_src.getXy()
