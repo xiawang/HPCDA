@@ -1227,7 +1227,7 @@ def checkFSharMetric_7():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V7
+#                    Fuzzy False Sharing V8
 ###################################################################
 
 def checkFSharMetric_8():
@@ -1347,5 +1347,5 @@ def checkFSharMetric_8():
 # checkFSharMetric_6()
 
 # Note: could be very slow
-# checkFSharMetric_7()
-checkFSharMetric_8()
+checkFSharMetric_7()
+# checkFSharMetric_8()
