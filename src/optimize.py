@@ -90,6 +90,15 @@ def toHour(secArray):
 	hArray = map(lambda x: x/3600, nparr)
 	return hArray
 
+def subTimeBase(secArray):
+	"""
+	Subtract time by the base time (first piece of data).
+	"""
+	arr = toFloat(secArray) # convert to floats
+	nparr = np.array(arr) # use numpy array
+	base = nparr[0]
+	hArray = map(lambda x: x-base, nparr)
+	return hArray
 
 def extract_map(infile, infy):
 	"""

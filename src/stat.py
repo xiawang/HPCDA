@@ -48,6 +48,40 @@ def checkTime():
 	sns.plt.show();
 	print "checkTime passed..." + '\n'
 
+def checkTime1():
+	"""
+	Customized function for checking the time feature.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 13, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = subTimeBase(ft1)
+	print "Data optimized..."
+
+	# then write out tesing csv
+	my_list = zip(ft1)
+	writeCSV('test_time_dif.csv', my_list)
+	print "Data written..."
+
+	# load testing csv and plot
+	data.load('test_time_dif.csv',ify=False)
+	X,y = data.getXy()
+	feature1 = []
+	print "Time data loaded..."
+
+	for i in range(235446):
+	    feature1.append(float(X[i][0]))
+	print "Time data converted to numpy array..."
+
+	# plot using pandas and seaborn
+	g = sns.distplot(feature1);
+
+	sns.plt.show();
+	print "checkTime passed..." + '\n'
+
 
 def checkLatency():
 	"""
@@ -691,6 +725,7 @@ def checkXYZ():
 # checkCPU()
 # checkDataSrc_Latency()
 # checkSharMetric()
-checkThreadMetric()
+# checkThreadMetric()
 # checkFSharMetric()
 # checkXYZ()
+checkTime1()

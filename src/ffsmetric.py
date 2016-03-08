@@ -2,10 +2,11 @@ import os
 import csv
 import math
 import numpy as np; np.random.seed(0)
-# import seaborn as sns; sns.set(color_codes=True)
-# import matplotlib.pyplot as plt
-# import pandas as pd
+import seaborn as sns; sns.set(color_codes=True)
+import matplotlib.pyplot as plt
+import pandas as pd
 import scipy.stats
+import statsmodels.api as sm
 from sklearn.neighbors import KernelDensity
 
 from mpl_toolkits.mplot3d import Axes3D
@@ -1501,6 +1502,274 @@ def checkFSharMetric_9():
 	print "Data written..."
 	print "checkFSharMetric passed..." + '\n'
 
+
+###################################################################
+#                    Fuzzy False Sharing V10
+###################################################################
+
+def checkFSharMetric_10():
+	"""
+	Customized function for checking the false sharing metric.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 14, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	ft3 = extract('samples.csv', 13, start=1)
+	ft4 = extract('samples.csv', 15, start=1)
+	print "type ft1: ", type(ft1[1])
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toLong(toFloat(ft1)) # data address
+	ft2 = toInteger(ft2) # Cache raw
+	ft3 = toInteger(ft3) # timestamp
+	ft4 = toInteger(ft4) # CPU
+	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
+	print "Data optimized..."
+
+	my_list = zip(ft1,ft4,ft2,ft3)
+	writeCSV('test_fsharing.csv', my_list)
+	print "Data written..."
+
+	# build dictionary for the metric (corresponding to 32 CPUs)
+	myDict = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], \
+	          8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [],\
+	          16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], \
+	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
+
+	# gather value for addr of each CPU ID
+	for i in xrange(235446):
+		if ft2[i] == 1:  # L1 cache
+			myDict[ft4[i]].append(ft1[i])
+
+	# build kde list for estimating distribution of address
+	kdeList = []
+	kdeScores = [0]*235446
+
+	for l in xrange(32):
+		CPU_d = [] # copying addr data for each CPU
+		for i in xrange(int(len(myDict[l]))):
+			CPU_d.append([myDict[l][i]])
+
+		# build kde for current cpu
+		kde = KernelDensity(kernel='gaussian', bandwidth=0.1).fit(CPU_d)
+		kdeList.append(kde)
+
+
+	# create list for the metric
+	ffsharing = [0.0]*235446
+	counter  = 0.0
+
+	print "Begin to calculate probability for all data points..."
+	print ""
+	for i in xrange(235446):
+		if ft2[i] == 1:  # L1 cache
+			ffs_metric = 0.0
+
+			kde = kdeList[ft4[i]]
+			std_score1 = math.exp(kde.score_samples([[ft1[i]]])[0]) # kde i; addr i
+
+			if i < 3:
+				for x in xrange(0,i-1): # within 10 rounds (short period of time)
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				for x in xrange(i+1,i+4): # within 10 rounds (short period of time)
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				ffs_metric = ffs_metric / (i+3)
+				# print ""
+			elif i >= 3 and i < 235443:
+				for x in xrange(i-3, i):
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				for x in xrange(i+1, i+4):
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				ffs_metric = ffs_metric / 6.0
+				# print ""
+			else:
+				for x in xrange(i-3, i):
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				for x in xrange(i+1, 235446):
+					std_score2 = math.exp(kde.score_samples([[ft1[x]]])[0]) # kde i; addr x
+					std_score3 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[i]]])[0]) # kde x; addr i
+					std_score4 = math.exp((kdeList[ft4[x]]).score_samples([[ft1[x]]])[0]) # kde x; addr x
+					std_score5 = math.exp((kdeList[ft4[x]]).score_samples([[(ft1[x]/2.0+ft1[i]/2.0)]])[0])
+					penalty = 1.0 - abs(std_score5 - std_score1)
+					# print ft4[i], " - ", ft4[x], "  ", ft1[i], " ", ft1[x]
+					ffs_temp = max(abs(std_score1 - std_score2), abs(std_score3 - std_score4)) + penalty
+					ffs_metric += ffs_temp
+				ffs_metric = ffs_metric / (235448-i)
+
+			ffsharing[i] = ffs_metric
+
+	for x in xrange(1,100):
+		print ffsharing[x]
+
+	my_list = zip(ffsharing)
+	writeCSV('test_ffsharing_8.csv', my_list)
+	print "Data written..."
+	print "checkFSharMetric passed..." + '\n'
+
+
+
+
+
+
+
+
+###################################################################
+#                          metric scratch
+###################################################################
+
+def metric_plot():
+	"""
+	Visualizing the false sharing metric.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 14, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	ft3 = extract('samples.csv', 13, start=1)
+	ft4 = extract('samples.csv', 15, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toLong(toFloat(ft1)) # data address
+	ft2 = toInteger(ft2) # Cache raw
+	ft3 = toInteger(ft3) # timestamp
+	ft4 = toInteger(ft4) # CPU
+	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
+	ft3 = subTimeBase(ft3) # timestamp subtracted from the base
+	print "Data optimized..."
+
+	my_list = zip(ft1,ft4,ft2,ft3)
+	writeCSV('test_fsharing.csv', my_list)
+	print "Data written..."
+
+	# build dictionary for the metric (corresponding to 32 CPUs)
+	myDict = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], \
+	          8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [],\
+	          16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], \
+	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
+
+	# gather value for addr of each CPU ID
+	# form: {0:[(addr0,time0), (addr1,time1), ...], ...}
+	for i in xrange(235446):
+		myDict[ft4[i]].append((ft1[i],ft3[i]))
+
+	# form: {0:[(addr0,addr1, ...), (time0,time1, ...)], ...}
+	for i in xrange(32):
+		myDict[i] = zip(*myDict[i])
+
+	d11 = np.array(list(myDict[0][0])) # CPU 0 (addr, time)
+	max0 = max(list(myDict[0][0]))
+	min0 = min(list(myDict[0][0]))
+	d12 = np.array(list(myDict[0][1]))
+	max1 = max(list(myDict[0][1]))
+	min1 = min(list(myDict[0][1]))
+	d21 = np.array(list(myDict[1][0])) # CPU 1 (addr, time)
+	max2 = max(list(myDict[1][0]))
+	min2 = min(list(myDict[1][0]))
+	d22 = np.array(list(myDict[1][1]))
+	max3 = max(list(myDict[1][1]))
+	min3 = min(list(myDict[1][1]))
+	d31 = np.array(list(myDict[2][0])) # CPU 2 (addr, time)
+	max4 = max(list(myDict[2][0]))
+	min4 = min(list(myDict[2][0]))
+	d32 = np.array(list(myDict[2][1]))
+	max5 = max(list(myDict[2][1]))
+	min5 = min(list(myDict[2][1]))
+
+	# print max0,max1,max2,max3,min0,min1,min2,min3
+
+	maxx = max(max0,max2,max4)
+	maxy = max(max1,max3,max5)
+	minx = min(min0,min2,min4)
+	miny = min(min1,min3,min5)
+
+	dens_u1 = sm.nonparametric.KDEMultivariate(data=[d11,d12],var_type='cc', bw='normal_reference')
+	dens_u2 = sm.nonparametric.KDEMultivariate(data=[d21,d22],var_type='cc', bw='normal_reference')
+	dens_u3 = sm.nonparametric.KDEMultivariate(data=[d31,d32],var_type='cc', bw='normal_reference')
+
+	# plot 3d kde
+	fig = plt.figure()
+	ax1 = fig.add_subplot(131, projection='3d')
+	ax2 = fig.add_subplot(132, projection='3d')
+	ax3 = fig.add_subplot(133, projection='3d')
+
+	x = np.arange(minx, maxx, (maxx-minx)/100.0)
+	y = np.arange(miny, maxy, (maxy-miny)/100.0)
+	x,y = np.meshgrid(x, y)
+	
+	z0 = []
+	z1 = []
+	z2 = []
+	for i in xrange(len(x)):
+		z_0 = []
+		z_1 = []
+		z_2 = []
+		for j in xrange(len(y)):
+			tempa = float(dens_u1.pdf([x[0][i],y[j][0]]))
+			tempb = float(dens_u2.pdf([x[0][i],y[j][0]]))
+			tempc = float(dens_u3.pdf([x[0][i],y[j][0]]))
+			z_0.append(tempa*tempb)
+			z_1.append(tempa*tempc)
+			z_2.append(z_0[j]+z_1[j])
+		z0.append(z_0)
+		z1.append(z_1)
+		z2.append(z_2)
+
+	wire1 = ax1.plot_wireframe(x,y,z0,rstride=1,cstride=1)
+	wire2 = ax2.plot_wireframe(x,y,z1,rstride=1,cstride=1)
+	wire3 = ax3.plot_wireframe(x,y,z2,rstride=1,cstride=1)
+	fig.set_size_inches(20, 5.7, forward=True)
+
+	ax1.set_xlabel('addr')
+	ax1.set_ylabel('time')
+	ax1.set_zlabel('prob')
+	ax2.set_xlabel('addr')
+	ax2.set_ylabel('time')
+	ax2.set_zlabel('prob')
+	ax3.set_xlabel('addr')
+	ax3.set_ylabel('time')
+	ax3.set_zlabel('prob')
+
+	# ax.set_ylim3d(2.5e10, 3.8e10)
+	plt.show()
+
 ###################################################################
 #                              testing
 ###################################################################
@@ -1515,4 +1784,6 @@ def checkFSharMetric_9():
 # Note: could be very slow
 # checkFSharMetric_7()
 # checkFSharMetric_8()
-checkFSharMetric_9()
+# checkFSharMetric_9()
+# checkFSharMetric_10()
+metric_plot()
