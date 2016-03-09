@@ -1713,6 +1713,8 @@ def metric_plot():
 	max5 = max(list(myDict[2][1]))
 	min5 = min(list(myDict[2][1]))
 
+	# should be replaced be the overall max and min in the real calculation process
+
 	# print max0,max1,max2,max3,min0,min1,min2,min3
 
 	maxx = max(max0,max2,max4)
@@ -1733,6 +1735,11 @@ def metric_plot():
 	x = np.arange(minx, maxx, (maxx-minx)/100.0)
 	y = np.arange(miny, maxy, (maxy-miny)/100.0)
 	x,y = np.meshgrid(x, y)
+
+	print len(x)
+	print len(x[0])
+	print len(y)
+	print len(y[0])
 	
 	z0 = []
 	z1 = []
@@ -1770,6 +1777,91 @@ def metric_plot():
 	# ax.set_ylim3d(2.5e10, 3.8e10)
 	plt.show()
 
+
+def process_kde_data():
+	"""
+	Calculate and store kde data for each CPU.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 14, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	ft3 = extract('samples.csv', 13, start=1)
+	ft4 = extract('samples.csv', 15, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toLong(toFloat(ft1)) # data address
+	ft2 = toInteger(ft2) # Cache raw
+	ft3 = toInteger(ft3) # timestamp
+	ft4 = toInteger(ft4) # CPU
+	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
+	ft3 = subTimeBase(ft3) # timestamp subtracted from the base
+	print "Data optimized..."
+
+	my_list = zip(ft1,ft4,ft2,ft3)
+	writeCSV('test_fsharing.csv', my_list)
+	print "Data written..."
+
+	# build dictionary for the metric (corresponding to 32 CPUs)
+	myDict = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], \
+	          8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [],\
+	          16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], \
+	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
+
+	# gather value for addr of each CPU ID
+	# form: {0:[(addr0,time0), (addr1,time1), ...], ...}
+	for i in xrange(235446):
+		myDict[ft4[i]].append((ft1[i],ft3[i]))
+
+	# find max and min
+	addr_max = max(ft2)
+	addr_min = min(ft2)
+	time_max = max(ft3)
+	time_min = min(ft3)
+
+	# form: {0:[(addr0,addr1, ...), (time0,time1, ...)], ...}
+	for i in xrange(32):
+		myDict[i] = zip(*myDict[i])
+
+	time_addr = []
+	for i in xrange(32):
+		for j in xrange(2):
+			time_addr.append(np.array(list(myDict[i][j])))
+
+	dens_us = []
+	for i in xrange(32):
+		d1 = time_addr[i*2]
+		d2 = time_addr[i*2+1]
+		tempdens = sm.nonparametric.KDEMultivariate(data=[d1,d2],var_type='cc', bw='normal_reference')
+		dens_us.append(tempdens)
+
+	x = np.arange(addr_min, addr_max, (addr_max-addr_min)/100.1)
+	y = np.arange(time_min, time_max, (time_max-time_min)/100.1)
+	x,y = np.meshgrid(x, y)
+
+	print len(x)
+	print len(y)
+	
+	for i in xrange(32):
+		kdeout = []
+		for j in xrange(len(x)):
+			kdein = []
+			for k in xrange(len(y)):
+				tempkde = float(dens_us[i].pdf([x[0][j],y[k][0]]))
+				kdein.append(tempkde)
+			kdeout.append(kdein)
+		flatkde = sum(kdeout,[])
+		zipkde = zip(flatkde)
+		file_name = 'cpu_kde_'
+		if i < 10:
+			file_name = file_name + '0' + str(i) + '.csv'
+		else:
+			file_name = file_name + str(i) + '.csv'
+		writeCSV(file_name, zipkde)
+		print "Finished writing data for CPU " + str(i)
+
+
 ###################################################################
 #                              testing
 ###################################################################
@@ -1786,4 +1878,5 @@ def metric_plot():
 # checkFSharMetric_8()
 # checkFSharMetric_9()
 # checkFSharMetric_10()
-metric_plot()
+# metric_plot()
+process_kde_data()

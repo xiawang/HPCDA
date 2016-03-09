@@ -344,6 +344,7 @@ def test11():
 		z1.append(z_1)
 		z2.append(z_2)
 		z3.append(z_3)
+	print z1
 
 	# surf = ax.plot_surface(x, y, z1, rstride=1, cstride=1, cmap=cm.coolwarm,
 	#         linewidth=0, antialiased=False)
