@@ -1919,11 +1919,12 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 			for y in xrange(leny):
 				tempm.append(matrixr[x*leny+y])
 			matrix.append(tempm)
+		matrix_list.append(matrix)
 	print "kde data extracted..."
 
 	# do pairwise calculation
 	z_res = [0.0]*lenx*leny
-	for i in xrange(32):
+	for i in xrange(31):
 		for j in xrange(i+1,32):
 			z = []
 			for x in xrange(lenx):
@@ -1933,6 +1934,7 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 				z.append(temp_z)
 			zflat = sum(z,[])
 			z_res = map(lambda x,y: x+y, z_res, zflat)
+			print z_res[:10]
 	print "Finished pairwise calculation..."
 
 	# calculate final matrix z
@@ -1942,7 +1944,15 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 		for y in xrange(leny):
 			temp_z.append(z_res[x*leny+y])
 		z.append(temp_z)
+		# for k in xrange(10):
+		# 	print temp_z[k]
+		# print " "
 	print "z calculated..."
+
+	# for i in xrange(10):
+	# 	for j in xrange(10):
+	# 		print z[i][j]
+	# 	print " "
 
 	# plot in 3D
 	fig = plt.figure()
