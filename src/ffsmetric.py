@@ -1861,6 +1861,103 @@ def process_kde_data():
 		writeCSV(file_name, zipkde)
 		print "Finished writing data for CPU " + str(i)
 
+def process_xyrange():
+	"""
+	Calculate x and y ranges.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 14, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	ft3 = extract('samples.csv', 13, start=1)
+	ft4 = extract('samples.csv', 15, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toLong(toFloat(ft1)) # data address
+	ft2 = toInteger(ft2) # Cache raw
+	ft3 = toInteger(ft3) # timestamp
+	ft4 = toInteger(ft4) # CPU
+	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
+	ft3 = subTimeBase(ft3) # timestamp subtracted from the base
+	print "Data optimized..."
+
+	# build dictionary for the metric (corresponding to 32 CPUs)
+	myDict = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], \
+	          8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [],\
+	          16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], \
+	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
+
+	# gather value for addr of each CPU ID
+	# form: {0:[(addr0,time0), (addr1,time1), ...], ...}
+	for i in xrange(235446):
+		myDict[ft4[i]].append((ft1[i],ft3[i]))
+
+	# find max and min
+	addr_max = max(ft2)
+	addr_min = min(ft2)
+	time_max = max(ft3)
+	time_min = min(ft3)
+
+	return addr_max,addr_min,time_max,time_min
+
+def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
+	# extract all 32 matrix
+	matrix_list = []
+	for i in xrange(32):
+		data = Data()
+		file_name = 'cpu_kde_'
+		if i < 10:
+			file_name = file_name + '0' + str(i) + '.csv'
+		else:
+			file_name = file_name + str(i) + '.csv'
+		matrixr = extract(file_name, 0, start=0)
+		matrixr = toFloat(matrixr)
+		matrix = []
+		for x in xrange(lenx):
+			tempm = []
+			for y in xrange(leny):
+				tempm.append(matrixr[x*leny+y])
+			matrix.append(tempm)
+	print "kde data extracted..."
+
+	# do pairwise calculation
+	z_res = [0.0]*lenx*leny
+	for i in xrange(32):
+		for j in xrange(i+1,32):
+			z = []
+			for x in xrange(lenx):
+				temp_z = []
+				for y in xrange(leny):
+					temp_z.append(matrix_list[i][x][y] * matrix_list[j][x][y])
+				z.append(temp_z)
+			zflat = sum(z,[])
+			z_res = map(lambda x,y: x+y, z_res, zflat)
+	print "Finished pairwise calculation..."
+
+	# calculate final matrix z
+	z = []
+	for x in xrange(lenx):
+		temp_z = []
+		for y in xrange(leny):
+			temp_z.append(z_res[x*leny+y])
+		z.append(temp_z)
+	print "z calculated..."
+
+	# plot in 3D
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection='3d')
+	x = np.arange(addr_min, addr_max, (addr_max-addr_min)/100.1)
+	y = np.arange(time_min, time_max, (time_max-time_min)/100.1)
+	x,y = np.meshgrid(x, y)
+	wire = ax.plot_wireframe(x,y,z,rstride=1,cstride=1)
+
+	ax.set_xlabel('addr')
+	ax.set_ylabel('time')
+	ax.set_zlabel('prob')
+
+	plt.show()
+
 
 ###################################################################
 #                              testing
@@ -1878,5 +1975,9 @@ def process_kde_data():
 # checkFSharMetric_8()
 # checkFSharMetric_9()
 # checkFSharMetric_10()
+
+# step by step process data for 32 CPUs
 # metric_plot()
-process_kde_data()
+# process_kde_data()
+xmax,xmin,ymax,ymin = process_xyrange()
+product_sum_kde(101,101,xmax,xmin,ymax,ymin)
