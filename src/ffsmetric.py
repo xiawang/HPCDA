@@ -1785,6 +1785,7 @@ def process_kde_data():
 	ft2 = extract('samples.csv', 17, start=1)
 	ft3 = extract('samples.csv', 13, start=1)
 	ft4 = extract('samples.csv', 15, start=1)
+	ft5 = extract('samples.csv', 16, start=1)
 	print "Data loaded..."
 
 	# do some optimization
@@ -1792,6 +1793,7 @@ def process_kde_data():
 	ft2 = toInteger(ft2) # Cache raw
 	ft3 = toInteger(ft3) # timestamp
 	ft4 = toInteger(ft4) # CPU
+	ft5 = toInteger(ft5) # latency
 	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
 	ft3 = subTimeBase(ft3) # timestamp subtracted from the base
 	print "Data optimized..."
