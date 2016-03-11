@@ -1921,6 +1921,25 @@ def process_xyrange():
 	return addr_max, addr_min, time_max, time_min
 
 def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 14, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	ft3 = extract('samples.csv', 13, start=1)
+	ft4 = extract('samples.csv', 15, start=1)
+	ft5 = extract('samples.csv', 16, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toLong(toFloat(ft1)) # data address
+	ft2 = toInteger(ft2) # Cache raw
+	ft3 = toInteger(ft3) # timestamp
+	ft4 = toInteger(ft4) # CPU
+	ft5 = toInteger(ft5) # latency
+	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
+	ft3 = subTimeBase(ft3) # timestamp subtracted from the base
+	print "Data optimized..."
+
 	# extract all 32 matrix
 	matrix_list = []
 	for i in xrange(32):
@@ -1971,6 +1990,7 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 	y = np.arange(time_min, time_max, (time_max-time_min)/110.1)
 	x,y = np.meshgrid(x, y)
 	wire = ax.plot_wireframe(x,y,z,rstride=1,cstride=1)
+	ax.scatter(ft1, ft3, ft5, c='r', marker='.')
 	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
 	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
 	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
@@ -2118,7 +2138,7 @@ def kde_ffs():
 # step by step process data for 32 CPUs
 # metric_plot()
 # process_kde_data()
-xmax,xmin,ymax,ymin = process_xyrange()
-product_sum_kde(111,111,xmax,xmin,ymax,ymin)
+# xmax,xmin,ymax,ymin = process_xyrange()
+# product_sum_kde(111,111,xmax,xmin,ymax,ymin)
 
 # kde_ffs()
