@@ -1990,7 +1990,10 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 	y = np.arange(time_min, time_max, (time_max-time_min)/110.1)
 	x,y = np.meshgrid(x, y)
 	wire = ax.plot_wireframe(x,y,z,rstride=1,cstride=1)
-	ax.scatter(ft1, ft3, ft5, c='r', marker='.')
+	max_z =  np.amax(z)
+	max_ft5 = np.amax(ft5)
+	ft5_scaled = map(lambda q: q*1.0*max_z/max_ft5, ft5)
+	ax.scatter(ft1, ft3, ft5_scaled, c='r', marker='.')
 	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
 	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
 	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
@@ -2138,7 +2141,7 @@ def kde_ffs():
 # step by step process data for 32 CPUs
 # metric_plot()
 # process_kde_data()
-# xmax,xmin,ymax,ymin = process_xyrange()
-# product_sum_kde(111,111,xmax,xmin,ymax,ymin)
+xmax,xmin,ymax,ymin = process_xyrange()
+product_sum_kde(111,111,xmax,xmin,ymax,ymin)
 
 # kde_ffs()
