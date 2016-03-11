@@ -1969,6 +1969,119 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 	plt.show()
 
 
+def kde_ffs():
+	"""
+	Calculate and plot kde data.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 14, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	ft3 = extract('samples.csv', 13, start=1)
+	ft4 = extract('samples.csv', 15, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toLong(toFloat(ft1)) # data address
+	ft2 = toInteger(ft2) # Cache raw
+	ft3 = toInteger(ft3) # timestamp
+	ft4 = toInteger(ft4) # CPU
+	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
+	ft3 = subTimeBase(ft3) # timestamp subtracted from the base
+	print "Data optimized..."
+
+	# build dictionary for the metric (corresponding to 32 CPUs)
+	myDict = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], \
+	          8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [],\
+	          16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], \
+	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
+
+	# gather value for addr of each CPU ID
+	# form: {0:[(addr0,time0), (addr1,time1), ...], ...}
+	for i in xrange(235446):
+		myDict[ft4[i]].append((ft1[i],ft3[i]))
+
+	# find max and min
+	addr_max = max(ft2)
+	addr_min = min(ft2)
+	time_max = max(ft3)
+	time_min = min(ft3)
+
+	# form: {0:[(addr0,addr1, ...), (time0,time1, ...)], ...}
+	for i in xrange(32):
+		myDict[i] = zip(*myDict[i])
+
+	time_addr = []
+	for i in xrange(32):
+		for j in xrange(2):
+			time_addr.append(np.array(list(myDict[i][j])))
+
+	dens_us = []
+	for i in xrange(32):
+		d1 = time_addr[i*2]
+		d2 = time_addr[i*2+1]
+		tempdens = sm.nonparametric.KDEMultivariate(data=[d1,d2],var_type='cc', bw='normal_reference')
+		dens_us.append(tempdens)
+
+	x = np.arange(addr_min, addr_max, (addr_max-addr_min)/100.1)
+	y = np.arange(time_min, time_max, (time_max-time_min)/100.1)
+	x,y = np.meshgrid(x, y)
+
+	print len(x)
+	print len(y)
+	
+	kde_data_list = []
+	for i in xrange(32):
+		kdeout = []
+		for j in xrange(len(x)):
+			kdein = []
+			for k in xrange(len(y)):
+				tempkde = float(dens_us[i].pdf([x[0][j],y[k][0]]))
+				kdein.append(tempkde)
+			kdeout.append(kdein)
+		kde_data_list.append(kdeout)
+	print "Finished calculate kde data for single CPU..."
+
+	# do pairwise calculation
+	pairwise_kde_list = []
+	for i in xrange(31):
+		for j in xrange(i+1,32):
+			z = []
+			# 1 pair of product 2D kde
+			for a in xrange(len(x)):
+				temp_z = []
+				for b in xrange(len(y)):
+					temp_z.append(kde_data_list[i][a][b] * kde_data_list[j][a][b])
+				z.append(temp_z)
+			pairwise_kde_list.append(z)
+
+	if len(pairwise_kde_list) != 496:
+		sys.exit("KDE length not match!")
+
+	print "Finished pairwise calculation..."
+
+	# calculate final sum
+	z_res = [[0.0]*len(y)]*len(x)
+	for k in xrange(len(pairwise_kde_list)):
+		for i in xrange(len(x)):
+			for j in xrange(len(y)):
+				z_res[i][j] += pairwise_kde_list[k][i][j]
+
+	# plot in 3D
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection='3d')
+
+	wire = ax.plot_wireframe(x,y,z_res,rstride=1,cstride=1)
+	fig.set_size_inches(14,16, forward=True)
+
+	ax.set_xlabel('addr')
+	ax.set_ylabel('time')
+	ax.set_zlabel('prob')
+
+	# ax.set_ylim3d(2.5e10, 3.8e10)
+	plt.show()
+
+
 ###################################################################
 #                              testing
 ###################################################################
@@ -1989,5 +2102,7 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 # step by step process data for 32 CPUs
 # metric_plot()
 # process_kde_data()
-xmax,xmin,ymax,ymin = process_xyrange()
-product_sum_kde(101,101,xmax,xmin,ymax,ymin)
+# xmax,xmin,ymax,ymin = process_xyrange()
+# product_sum_kde(101,101,xmax,xmin,ymax,ymin)
+
+kde_ffs()
