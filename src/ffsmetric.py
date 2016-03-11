@@ -4,6 +4,7 @@ import math
 import numpy as np; np.random.seed(0)
 import seaborn as sns; sns.set(color_codes=True)
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import pandas as pd
 import scipy.stats
 import statsmodels.api as sm
@@ -1695,70 +1696,80 @@ def metric_plot():
 		myDict[i] = zip(*myDict[i])
 
 	d11 = np.array(list(myDict[0][0])) # CPU 0 (addr, time)
+	max0 = max(list(myDict[0][0]))
+	min0 = min(list(myDict[0][0]))
 	d12 = np.array(list(myDict[0][1]))
+	max1 = max(list(myDict[0][1]))
+	min1 = min(list(myDict[0][1]))
 	d21 = np.array(list(myDict[1][0])) # CPU 1 (addr, time)
+	max2 = max(list(myDict[1][0]))
+	min2 = min(list(myDict[1][0]))
 	d22 = np.array(list(myDict[1][1]))
+	max3 = max(list(myDict[1][1]))
+	min3 = min(list(myDict[1][1]))
 	d31 = np.array(list(myDict[2][0])) # CPU 2 (addr, time)
+	max4 = max(list(myDict[2][0]))
+	min4 = min(list(myDict[2][0]))
 	d32 = np.array(list(myDict[2][1]))
-	d41 = np.array(list(myDict[3][0])) # CPU 3 (addr, time)
-	d42 = np.array(list(myDict[3][1]))
+	max5 = max(list(myDict[2][1]))
+	min5 = min(list(myDict[2][1]))
 
-	# should be replaced be the overall max and min in the real calculation process
+	print max0,max1,max2,max3,min0,min1,min2,min3
 
-	# print max0,max1,max2,max3,min0,min1,min2,min3
-
-	maxx = max(ft2)
-	minx = min(ft2)
-	maxy = max(ft3)
-	miny = min(ft3)
+	maxx = max(max0,max2,max4)
+	maxy = max(max1,max3,max5)
+	minx = min(min0,min2,min4)
+	miny = min(min1,min3,min5)
 
 	dens_u1 = sm.nonparametric.KDEMultivariate(data=[d11,d12],var_type='cc', bw='normal_reference')
 	dens_u2 = sm.nonparametric.KDEMultivariate(data=[d21,d22],var_type='cc', bw='normal_reference')
 	dens_u3 = sm.nonparametric.KDEMultivariate(data=[d31,d32],var_type='cc', bw='normal_reference')
-	# dens_u4 = sm.nonparametric.KDEMultivariate(data=[d41,d42],var_type='cc', bw='normal_reference')
 
 	# plot 3d kde
 	fig = plt.figure()
-	ax = fig.add_subplot(111, projection='3d')
+	ax1 = fig.add_subplot(131, projection='3d')
+	ax2 = fig.add_subplot(132, projection='3d')
+	ax3 = fig.add_subplot(133, projection='3d')
 
-	x = np.arange(minx, maxx, (maxx-minx)/100.1)
-	y = np.arange(miny, maxy, (maxy-miny)/100.1)
+	print maxx
+	print minx
+
+	x = np.arange(minx, maxx, (maxx-minx)/100)
+	y = np.arange(miny, maxy, (maxy-miny)/100)
 	x,y = np.meshgrid(x, y)
-
-	print len(x)
-	print len(x[0])
-	print len(y)
-	print len(y[0])
 	
 	z0 = []
 	z1 = []
-	# z2 = []
-	z3 = []
+	z2 = []
 	for i in xrange(len(x)):
 		z_0 = []
 		z_1 = []
-		# z_2 = []
-		z_3 = []
+		z_2 = []
 		for j in xrange(len(y)):
 			tempa = float(dens_u1.pdf([x[0][i],y[j][0]]))
 			tempb = float(dens_u2.pdf([x[0][i],y[j][0]]))
 			tempc = float(dens_u3.pdf([x[0][i],y[j][0]]))
-			# tempd = float(dens_u4.pdf([x[0][i],y[j][0]]))
 			z_0.append(tempa*tempb)
 			z_1.append(tempa*tempc)
-			# z_2.append(tempa*tempd)
-			z_3.append(z_0[j]+z_1[j])
+			z_2.append(z_0[j]+z_1[j])
 		z0.append(z_0)
 		z1.append(z_1)
-		# z2.append(z_2)
-		z3.append(z_3)
+		z2.append(z_2)
 
-	wire = ax.plot_wireframe(x,y,z0,rstride=1,cstride=1)
-	fig.set_size_inches(16, 16, forward=True)
+	wire1 = ax1.plot_wireframe(x,y,z0,rstride=1,cstride=1)
+	wire2 = ax2.plot_wireframe(x,y,z1,rstride=1,cstride=1)
+	wire3 = ax3.plot_wireframe(x,y,z2,rstride=1,cstride=1)
+	fig.set_size_inches(20, 5.7, forward=True)
 
-	ax.set_xlabel('addr')
-	ax.set_ylabel('time')
-	ax.set_zlabel('prob')
+	ax1.set_xlabel('addr')
+	ax1.set_ylabel('time')
+	ax1.set_zlabel('prob')
+	ax2.set_xlabel('addr')
+	ax2.set_ylabel('time')
+	ax2.set_zlabel('prob')
+	ax3.set_xlabel('addr')
+	ax3.set_ylabel('time')
+	ax3.set_zlabel('prob')
 
 	# ax.set_ylim3d(2.5e10, 3.8e10)
 	plt.show()
@@ -1800,15 +1811,24 @@ def process_kde_data():
 	for i in xrange(235446):
 		myDict[ft4[i]].append((ft1[i],ft3[i]))
 
-	# find max and min
-	addr_max = max(ft2)
-	addr_min = min(ft2)
-	time_max = max(ft3)
-	time_min = min(ft3)
-
 	# form: {0:[(addr0,addr1, ...), (time0,time1, ...)], ...}
 	for i in xrange(32):
 		myDict[i] = zip(*myDict[i])
+
+	# find max and min
+	addr_max = max(list(myDict[0][0]))
+	addr_min = min(list(myDict[0][0]))
+	time_max = max(list(myDict[0][1]))
+	time_min = min(list(myDict[0][1]))
+	for i in xrange(32):
+		for j in xrange(2):
+			if j == 0:
+				addr_max = max(addr_max, max(list(myDict[i][j])))
+				addr_min = min(addr_min, min(list(myDict[i][j])))
+			else:
+				time_max = max(time_max, max(list(myDict[i][j])))
+				time_min = min(time_min, min(list(myDict[i][j])))
+	print addr_max, addr_min, time_max, time_min
 
 	time_addr = []
 	for i in xrange(32):
@@ -1822,8 +1842,8 @@ def process_kde_data():
 		tempdens = sm.nonparametric.KDEMultivariate(data=[d1,d2],var_type='cc', bw='normal_reference')
 		dens_us.append(tempdens)
 
-	x = np.arange(addr_min, addr_max, (addr_max-addr_min)/100.1)
-	y = np.arange(time_min, time_max, (time_max-time_min)/100.1)
+	x = np.arange(addr_min, addr_max, (addr_max-addr_min)/110.1)
+	y = np.arange(time_min, time_max, (time_max-time_min)/110.1)
 	x,y = np.meshgrid(x, y)
 
 	print len(x)
@@ -1879,13 +1899,24 @@ def process_xyrange():
 	for i in xrange(235446):
 		myDict[ft4[i]].append((ft1[i],ft3[i]))
 
-	# find max and min
-	addr_max = max(ft2)
-	addr_min = min(ft2)
-	time_max = max(ft3)
-	time_min = min(ft3)
+	# form: {0:[(addr0,addr1, ...), (time0,time1, ...)], ...}
+	for i in xrange(32):
+		myDict[i] = zip(*myDict[i])
 
-	return addr_max,addr_min,time_max,time_min
+	# find max and min
+	addr_max = max(list(myDict[0][0]))
+	addr_min = min(list(myDict[0][0]))
+	time_max = max(list(myDict[0][1]))
+	time_min = min(list(myDict[0][1]))
+	for i in xrange(32):
+		for j in xrange(2):
+			if j == 0:
+				addr_max = max(addr_max, max(list(myDict[i][j])))
+				addr_min = min(addr_min, min(list(myDict[i][j])))
+			else:
+				time_max = max(time_max, max(list(myDict[i][j])))
+				time_min = min(time_min, min(list(myDict[i][j])))
+	return addr_max, addr_min, time_max, time_min
 
 def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 	# extract all 32 matrix
@@ -1920,7 +1951,6 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 				z.append(temp_z)
 			zflat = sum(z,[])
 			z_res = map(lambda x,y: x+y, z_res, zflat)
-			print z_res[:10]
 	print "Finished pairwise calculation..."
 
 	# calculate final matrix z
@@ -1930,27 +1960,25 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 		for y in xrange(leny):
 			temp_z.append(z_res[x*leny+y])
 		z.append(temp_z)
-		# for k in xrange(10):
-		# 	print temp_z[k]
-		# print " "
 	print "z calculated..."
-
-	# for i in xrange(10):
-	# 	for j in xrange(10):
-	# 		print z[i][j]
-	# 	print " "
 
 	# plot in 3D
 	fig = plt.figure()
 	ax = fig.add_subplot(111, projection='3d')
-	x = np.arange(addr_min, addr_max, (addr_max-addr_min)/100.1)
-	y = np.arange(time_min, time_max, (time_max-time_min)/100.1)
+	x = np.arange(addr_min, addr_max, (addr_max-addr_min)/110.1)
+	y = np.arange(time_min, time_max, (time_max-time_min)/110.1)
 	x,y = np.meshgrid(x, y)
 	wire = ax.plot_wireframe(x,y,z,rstride=1,cstride=1)
+	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
+	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
+	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
+	fig.set_size_inches(15, 15, forward=True)
 
 	ax.set_xlabel('addr')
 	ax.set_ylabel('time')
 	ax.set_zlabel('prob')
+
+	# ax.set_ylim3d(2.7e10, 3.8e10)
 
 	plt.show()
 
@@ -2086,9 +2114,9 @@ def kde_ffs():
 # checkFSharMetric_10()
 
 # step by step process data for 32 CPUs
-metric_plot()
+# metric_plot()
 # process_kde_data()
-# xmax,xmin,ymax,ymin = process_xyrange()
-# product_sum_kde(101,101,xmax,xmin,ymax,ymin)
+xmax,xmin,ymax,ymin = process_xyrange()
+product_sum_kde(111,111,xmax,xmin,ymax,ymin)
 
 # kde_ffs()
