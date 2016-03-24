@@ -1992,16 +1992,18 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 	wire = ax.plot_wireframe(x,y,z,rstride=1,cstride=1)
 	max_z =  np.amax(z)
 	max_ft5 = np.amax(ft5)
-	ft5_scaled = map(lambda q: q*1.0*max_z/max_ft5, ft5)
-	ax.scatter(ft1, ft3, ft5_scaled, c='r', marker='.')
+	# ft5_scaled = map(lambda q: q*1.0*max_z/max_ft5, ft5)
+	# ax.scatter(ft1, ft3, ft5_scaled, c='r', marker='.')
 	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
 	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
 	cset = ax.contourf(x,y,z, cmap=cm.coolwarm)
 	fig.set_size_inches(15, 15, forward=True)
 
-	ax.set_xlabel('addr')
-	ax.set_ylabel('time')
-	ax.set_zlabel('prob')
+	ax.set_xlabel('Memory Address',fontsize=17,labelpad=10)
+	ax.set_ylabel('Time Stamp',fontsize=17,labelpad=10)
+	ax.set_zlabel('Relative Probability',fontsize=17,labelpad=10)
+
+	fig.suptitle('KDE False Sharing Metric', fontsize=20)
 
 	# ax.set_ylim3d(2.7e10, 3.8e10)
 
@@ -2121,6 +2123,68 @@ def kde_ffs():
 	plt.show()
 
 
+def metric_plot_2():
+	"""
+	Visualizing the false sharing metric.
+	"""
+	# first read in some features from sample
+	data = Data()
+	ft1 = extract('samples.csv', 14, start=1)
+	ft2 = extract('samples.csv', 17, start=1)
+	ft3 = extract('samples.csv', 13, start=1)
+	ft4 = extract('samples.csv', 15, start=1)
+	print "Data loaded..."
+
+	# do some optimization
+	ft1 = toLong(toFloat(ft1)) # data address
+	ft2 = toInteger(ft2) # Cache raw
+	ft3 = toInteger(ft3) # timestamp
+	ft4 = toInteger(ft4) # CPU
+	ft2 = map(lambda x: map_data_src(x), ft2) # Cache decoded
+	ft3 = subTimeBase(ft3) # timestamp subtracted from the base
+	print "Data optimized..."
+
+	my_list = zip(ft1,ft4,ft2,ft3)
+	writeCSV('test_fsharing.csv', my_list)
+	print "Data written..."
+
+	# build dictionary for the metric (corresponding to 32 CPUs)
+	myDict = {0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [], \
+	          8: [], 9: [], 10: [], 11: [], 12: [], 13: [], 14: [], 15: [],\
+	          16: [], 17: [], 18: [], 19: [], 20: [], 21: [], 22: [], 23: [], \
+	          24: [], 25: [], 26: [], 27: [], 28: [], 29: [], 30: [], 31: []}
+
+	# gather value for addr of each CPU ID
+	# form: {0:[(addr0,time0), (addr1,time1), ...], ...}
+	for i in xrange(235446):
+		myDict[ft4[i]].append((ft1[i],ft3[i]))
+
+	# form: {0:[(addr0,addr1, ...), (time0,time1, ...)], ...}
+	for i in xrange(32):
+		myDict[i] = zip(*myDict[i])
+
+	d11 = np.array(list(myDict[0][0])) # CPU 0 (addr, time)
+	d12 = np.array(list(myDict[0][1])) # CPU 0 (addr, time)
+
+	# plot in 3D
+	fig = plt.figure()
+	ax = fig.add_subplot(111, projection='3d')
+	x = d12
+	y = [0.0]*len(d11)
+	z = d11
+	ax.scatter(x, y, z, c='r', marker='.')
+	fig.set_size_inches(15, 15, forward=True)
+
+	ax.set_xlabel('time')
+	ax.set_ylabel('trial')
+	ax.set_zlabel('addr')
+
+	ax.set_zlim3d(0, 1500)
+
+	plt.show()
+	
+
+
 ###################################################################
 #                              testing
 ###################################################################
@@ -2145,3 +2209,5 @@ xmax,xmin,ymax,ymin = process_xyrange()
 product_sum_kde(111,111,xmax,xmin,ymax,ymin)
 
 # kde_ffs()
+
+# metric_plot_2()
