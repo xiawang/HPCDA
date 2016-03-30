@@ -23,3 +23,7 @@ The *fuzzy-false-sharing-metric* based on the Kernel Density Estimation is store
 
 There are also some test files ( with the format **test_i.py** ) in the **src** directory that are only for test and other trivaial purposes.
 
+Plot (KDE False Sharing Metric)
+--------------
+
+![alt tag](https://raw.githubusercontent.com/xiawang/HPCDA/master/figs/figure_13_rt.png)
