@@ -17,8 +17,22 @@ from kmeans import *
 from optimize import *
 from kmeans import *
 
+'''
+    Important: This document contains the fuzzy false sharing metric
+               based on Kernel Density Estimation method. The final
+               test we run here is based on the sample data we get 
+               from Lullesh simulation.
+
+               Please refer to the following functions for the main process:
+               process_kde_data()
+               process_xyrange()
+               product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min)
+'''
+
+
+
 ###################################################################
-#                    Fuzzy False Sharing V1
+#                Fuzzy False Sharing V1 (deprecated)
 ###################################################################
 
 def checkFSharMetric_1():
@@ -189,7 +203,7 @@ def checkFSharMetric_1():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V2
+#                Fuzzy False Sharing V2 (deprecated)
 ###################################################################
 
 def checkFSharMetric_2():
@@ -348,7 +362,7 @@ def checkFSharMetric_2():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V3
+#                Fuzzy False Sharing V3 (deprecated)
 ###################################################################
 
 def checkFSharMetric_3():
@@ -534,7 +548,7 @@ def checkFSharMetric_3():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V4
+#                Fuzzy False Sharing V4 (deprecated)
 ###################################################################
 
 def checkFSharMetric_4():
@@ -729,7 +743,7 @@ def checkFSharMetric_4():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V5
+#                Fuzzy False Sharing V5 (deprecated)
 ###################################################################
 
 def checkFSharMetric_5():
@@ -918,7 +932,7 @@ def checkFSharMetric_5():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V6
+#                Fuzzy False Sharing V6 (deprecated)
 ###################################################################
 
 def checkFSharMetric_6():
@@ -1102,7 +1116,7 @@ def checkFSharMetric_6():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V7
+#                Fuzzy False Sharing V7 (deprecated)
 ###################################################################
 
 def checkFSharMetric_7():
@@ -1229,7 +1243,7 @@ def checkFSharMetric_7():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V8
+#                Fuzzy False Sharing V8 (deprecated)
 ###################################################################
 
 def checkFSharMetric_8():
@@ -1364,7 +1378,7 @@ def checkFSharMetric_8():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V9
+#                Fuzzy False Sharing V9 (deprecated)
 ###################################################################
 
 def checkFSharMetric_9():
@@ -1505,7 +1519,7 @@ def checkFSharMetric_9():
 
 
 ###################################################################
-#                    Fuzzy False Sharing V10
+#                Fuzzy False Sharing V10 (deprecated)
 ###################################################################
 
 def checkFSharMetric_10():
@@ -1652,7 +1666,7 @@ def checkFSharMetric_10():
 
 
 ###################################################################
-#                          metric scratch
+#                        kde based metric
 ###################################################################
 
 def metric_plot():
@@ -2007,12 +2021,14 @@ def product_sum_kde(lenx, leny, addr_max, addr_min, time_max, time_min):
 
 	# ax.set_ylim3d(2.7e10, 3.8e10)
 
-	plt.show()
+	# plt.show()
+	fig.savefig('../figs/kde_false_sharing.png')
 
 
 def kde_ffs():
 	"""
-	Calculate and plot kde data.
+	Important: this method might take a long time!
+	Calculate and plot kde data directly within the mehtod.
 	"""
 	# first read in some features from sample
 	data = Data()
@@ -2120,7 +2136,8 @@ def kde_ffs():
 	ax.set_zlabel('prob')
 
 	# ax.set_ylim3d(2.5e10, 3.8e10)
-	plt.show()
+	# plt.show()
+	fig.savefig('../figs/kde_false_sharing_test1.png')
 
 
 def metric_plot_2():
@@ -2181,7 +2198,8 @@ def metric_plot_2():
 
 	ax.set_zlim3d(0, 1500)
 
-	plt.show()
+	# plt.show()
+	fig.savefig('../figs/kde_false_sharing_test2.png')
 	
 
 
@@ -2202,12 +2220,20 @@ def metric_plot_2():
 # checkFSharMetric_9()
 # checkFSharMetric_10()
 
-# step by step process data for 32 CPUs
-# metric_plot()
-# process_kde_data()
-xmax,xmin,ymax,ymin = process_xyrange()
-product_sum_kde(111,111,xmax,xmin,ymax,ymin)
-
 # kde_ffs()
-
 # metric_plot_2()
+
+
+#-----------------------------------------
+#          Most Important Tests
+#-----------------------------------------
+
+# step by step process data for 32 CPUs
+# 1. simple test
+# metric_plot()
+# 2. read in raw, process for all CPUs data, save in different files
+# process_kde_data()
+# 3. calcualte ranges for final ploting
+xmax,xmin,ymax,ymin = process_xyrange()
+# 4. final calculation on all permutations and save the plots.
+product_sum_kde(111,111,xmax,xmin,ymax,ymin)
