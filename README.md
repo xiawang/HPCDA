@@ -10,16 +10,16 @@ Directories
 - **data**: The data folder contains all data csv files directly from Mitos or temporary data generated during the analysis process.
 - **figs**: The figs folder contains all figures generated from the data analysis process.
 - **src**: The src folder contains main.py as well as all other helper functions, models, and automations.
-- **tsrc**: The tsrc folder contains some example usage of Scikit-learn machine-learning functions on the Titanic data set. (Unrelated to the project itself.)
+- **tsrc**: The tsrc folder contains some example usage of Scikit-learn machine-learning functions on the Titanic data set. (Unrelated to the project itself, but can be very useful to check some basic usage of Scikit-learn functions.)
 
 Note
 --------------
-Please do not ran the file **main.py** directly, as it will extract and generate new data files and serves only as an automation for checking helper functions.
+By running either the file **main.py** directly, or the file **ffsmetric.py**, some preprocessed data can be read in, and a plot called **kde_false_sharing.png** will be saved in the folder **figs**.
 
 The regression model is stored in the file **regression.py**, and by running this file, we can check the factor of each metric that
 contribute to the time latency for memory access (the higher the better a metric is). The use of metric is annotated in this file.
 
-The *fuzzy-false-sharing-metric* is stored in the file **ffsmetric.py**. It contains several slightly different variations of the metric which also differ in performance. (Currently, the label-assignment version is better than distribution-accumulation ones.)
+The *fuzzy-false-sharing-metric* based on the Kernel Density Estimation is stored in the file **ffsmetric.py**. It contains several slightly different variations of the metric ( first 10 version of them are deprecated ) which also differ in performance. (Currently, only the last version provides the proper evaluation and plot.)
 
-There are also some test files in the **src** directory that are only for test and other trivaial purposes.
+There are also some test files ( with the format **test_i.py** ) in the **src** directory that are only for test and other trivaial purposes.
 
