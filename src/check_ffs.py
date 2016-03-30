@@ -14,7 +14,13 @@ from kmeans import *
 from optimize import *
 from kmeans import *
 
-def checkLatency():
+'''
+    This file contains the method for checking relationship between the
+    latency and cache fuzzy false sharing metric based on KDE.
+'''
+
+
+def checkFFS():
 	"""
 	Customized function for checking the latency and ffs metric.
 	"""
@@ -54,11 +60,11 @@ def checkLatency():
 
 	# sns.plt.show();
 	plt.show();
-	print "checkLatency passed..." + '\n'
+	print "checkFFS passed..." + '\n'
 
 # x = {1,2,3,4,5}
 # y = {2,4,6,8,10}
 # sns.regplot(x=x, y=y);
 # sns.plt.show();
 
-checkLatency()
+checkFFS()

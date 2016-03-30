@@ -167,7 +167,7 @@ def test6():
 # test3()
 # test4()
 # test5()
-test6()
+# test6()
 
 # x = np.concatenate([norm(-1, 1.).rvs(400),
 #                     norm(1, 0.3).rvs(100)])

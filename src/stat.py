@@ -13,6 +13,13 @@ from kmeans import *
 from optimize import *
 from kmeans import *
 
+'''
+    This file contains methods for extracting, modifying, and saving
+    different features of the sample data (lullesh) into different
+    csv files. Those data from csv files can be read in to an array
+    for data analysis.
+'''
+
 def checkTime():
 	"""
 	Customized function for checking the time feature.
@@ -728,4 +735,4 @@ def checkXYZ():
 # checkThreadMetric()
 # checkFSharMetric()
 # checkXYZ()
-checkTime1()
+# checkTime1()

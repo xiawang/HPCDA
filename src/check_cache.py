@@ -14,6 +14,12 @@ from kmeans import *
 from optimize import *
 from kmeans import *
 
+'''
+    This file contains the method for checking relationship between the
+    latency and cache distribution.
+'''
+
+
 def checkCache():
 	"""
 	Customized function for checking the latency and ffs metric.

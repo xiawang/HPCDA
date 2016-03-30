@@ -11,6 +11,7 @@ import pandas as pd
 from processdata import *
 from kmeans import *
 from optimize import *
+from ffsmetric import *
 
 def test1():
 	# first read in some features from sample
@@ -101,12 +102,14 @@ def test3():
 	plotKMeans(my_list,y,centers,8,-0.5,5.5,-100,4100)
 	print "Test3 passed..." + '\n'
 
+def test4():
+	# check the false sharing metric and save the plot
+	xmax,xmin,ymax,ymin = process_xyrange()
+	product_sum_kde(111,111,xmax,xmin,ymax,ymin)
 
-# def main():
-# 	# run tests
-# 	# test1()
-# 	# test2()
-# 	test3()
+def main():
+	# run tests
+	test4()
 
-# # automation
-# if __name__ == "__main__": main()
+# automation
+if __name__ == "__main__": main()
